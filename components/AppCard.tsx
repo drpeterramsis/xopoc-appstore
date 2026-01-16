@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Star, Download, Loader2 } from 'lucide-react';
+import { Star, Download, Loader2, Package } from 'lucide-react';
 import { AppData } from '../types';
 
 interface AppCardProps {
@@ -10,6 +10,7 @@ interface AppCardProps {
 const AppCard: React.FC<AppCardProps> = ({ app, onClick }) => {
   const [fetchedData, setFetchedData] = useState<Partial<AppData>>({});
   const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -24,7 +25,9 @@ const AppCard: React.FC<AppCardProps> = ({ app, onClick }) => {
         }
 
         const res = await fetch(`/api/app?id=${app.id}`);
-        if (!res.ok) throw new Error('Failed to fetch');
+        if (!res.ok) {
+           throw new Error(`Status: ${res.status}`);
+        }
         const data = await res.json();
         
         if (isMounted) {
@@ -33,8 +36,11 @@ const AppCard: React.FC<AppCardProps> = ({ app, onClick }) => {
           setLoading(false);
         }
       } catch (err) {
-        console.error(err);
-        if (isMounted) setLoading(false);
+        console.warn(`Failed to fetch metadata for ${app.id}:`, err);
+        if (isMounted) {
+            setHasError(true);
+            setLoading(false);
+        }
       }
     };
 
@@ -43,10 +49,14 @@ const AppCard: React.FC<AppCardProps> = ({ app, onClick }) => {
   }, [app.id]);
 
   // Use fetched data or fallback
-  const iconUrl = fetchedData.iconUrl || "https://placehold.co/512x512/202124/0F9D58?text=Loading";
+  // Fallback to a clean Android logo or generic icon if loading fails
+  const iconUrl = (!loading && !hasError && fetchedData.iconUrl) 
+    ? fetchedData.iconUrl 
+    : null;
+    
   const rating = fetchedData.rating || 0;
   const downloads = fetchedData.downloads || '';
-  const description = fetchedData.description || "Loading app details...";
+  const description = fetchedData.description || app.title; // Fallback to title if no desc
 
   return (
     <div 
@@ -55,14 +65,19 @@ const AppCard: React.FC<AppCardProps> = ({ app, onClick }) => {
     >
       <div className="flex items-start justify-between mb-4">
         <div className="relative">
-            <img 
-            src={iconUrl} 
-            alt={app.title} 
-            className={`w-16 h-16 rounded-2xl shadow-md object-cover group-hover:scale-105 transition-transform duration-300 ${loading ? 'opacity-50 blur-sm' : ''}`}
-            />
-            {loading && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <Loader2 size={24} className="animate-spin text-primary" />
+            {iconUrl ? (
+                <img 
+                src={iconUrl} 
+                alt={app.title} 
+                className="w-16 h-16 rounded-2xl shadow-md object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+            ) : (
+                <div className={`w-16 h-16 rounded-2xl shadow-md bg-white/10 flex items-center justify-center group-hover:scale-105 transition-transform duration-300 ${loading ? 'animate-pulse' : ''}`}>
+                    {loading ? (
+                        <Loader2 size={24} className="animate-spin text-primary" />
+                    ) : (
+                        <Package size={32} className="text-gray-500" />
+                    )}
                 </div>
             )}
         </div>

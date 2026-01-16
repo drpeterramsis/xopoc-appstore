@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowRight, Star, Download, ShieldCheck, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowRight, Star, Download, ShieldCheck, Loader2, AlertCircle, Package } from 'lucide-react';
 import { APPS_DATA } from '../constants';
 import { AppData } from '../types';
 
@@ -11,7 +11,7 @@ const AppDetails: React.FC = () => {
 
   const [details, setDetails] = useState<Partial<AppData> | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [usingFallback, setUsingFallback] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -35,8 +35,14 @@ const AppDetails: React.FC = () => {
             setDetails(data);
             sessionStorage.setItem(`app_${id}`, JSON.stringify(data));
         } catch (err) {
-            setError('Could not load app details from Play Store.');
-            console.error(err);
+            console.warn("Could not load full app details, using fallback.", err);
+            setUsingFallback(true);
+            // Use basic info as details if fetch fails
+            setDetails({
+                ...basicAppInfo,
+                description: "Full description unavailable from Play Store. Please check the Play Store link for more details.",
+                screenshots: []
+            });
         } finally {
             setLoading(false);
         }
@@ -80,50 +86,58 @@ const AppDetails: React.FC = () => {
             </div>
         )}
 
-        {/* Error State */}
-        {!loading && error && (
-            <div className="bg-red-900/20 border border-red-500/20 rounded-xl p-6 text-center my-10">
-                <AlertCircle size={32} className="text-red-500 mx-auto mb-2" />
-                <p className="text-red-300">{error}</p>
-                <a 
-                  href={basicAppInfo.playStoreUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block mt-4 text-primary hover:underline"
-                >
-                    View on Play Store directly
-                </a>
-            </div>
-        )}
-
         {/* Content */}
-        {!loading && !error && details && (
+        {!loading && details && (
             <>
+                {/* Fallback Warning */}
+                {usingFallback && (
+                    <div className="bg-yellow-900/20 border border-yellow-500/20 rounded-xl p-4 mb-6 flex items-center justify-end text-right">
+                        <div>
+                            <p className="text-yellow-200 text-sm">could not connect to Play Store API</p>
+                            <p className="text-yellow-500 text-xs">Some details might be missing</p>
+                        </div>
+                        <AlertCircle size={24} className="text-yellow-500 ml-3" />
+                    </div>
+                )}
+
                 {/* Top Section */}
                 <div className="flex flex-col md:flex-row gap-6 mt-6">
-                <img 
-                    src={details.iconUrl} 
-                    alt={basicAppInfo.title} 
-                    className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl shadow-2xl mx-auto md:mx-0 object-cover"
-                />
+                 <div className="mx-auto md:mx-0">
+                    {details.iconUrl ? (
+                         <img 
+                         src={details.iconUrl} 
+                         alt={basicAppInfo.title} 
+                         className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl shadow-2xl object-cover"
+                     />
+                    ) : (
+                        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl shadow-2xl bg-white/10 flex items-center justify-center">
+                            <Package size={48} className="text-gray-500" />
+                        </div>
+                    )}
+                 </div>
+                
                 <div className="flex-grow text-center md:text-right">
                     <h1 dir="rtl" className="text-3xl font-bold text-white mb-1 font-sans">{basicAppInfo.title}</h1>
                     <p className="text-primary font-medium mb-4">{basicAppInfo.developer}</p>
                     
                     {/* Stats */}
-                    <div className="flex items-center justify-center md:justify-end gap-6 text-gray-300 text-sm mb-6 border-b border-white/10 pb-6 md:border-none md:pb-0">
-                    <div className="flex flex-col items-center">
-                        <span className="font-bold text-white flex items-center">
-                        {details.rating} <Star size={12} fill="currentColor" className="ml-1" />
-                        </span>
-                        <span className="text-xs text-gray-500">Rating</span>
-                    </div>
-                    <div className="w-px h-8 bg-white/10"></div>
-                    <div className="flex flex-col items-center">
-                        <span className="font-bold text-white">{details.downloads}</span>
-                        <span className="text-xs text-gray-500">Downloads</span>
-                    </div>
-                    </div>
+                    {details.rating ? (
+                        <div className="flex items-center justify-center md:justify-end gap-6 text-gray-300 text-sm mb-6 border-b border-white/10 pb-6 md:border-none md:pb-0">
+                        <div className="flex flex-col items-center">
+                            <span className="font-bold text-white flex items-center">
+                            {details.rating} <Star size={12} fill="currentColor" className="ml-1" />
+                            </span>
+                            <span className="text-xs text-gray-500">Rating</span>
+                        </div>
+                        <div className="w-px h-8 bg-white/10"></div>
+                        <div className="flex flex-col items-center">
+                            <span className="font-bold text-white">{details.downloads || '-'}</span>
+                            <span className="text-xs text-gray-500">Downloads</span>
+                        </div>
+                        </div>
+                    ) : (
+                        <div className="mb-6"></div>
+                    )}
 
                     <a 
                     href={basicAppInfo.playStoreUrl}
@@ -131,7 +145,7 @@ const AppDetails: React.FC = () => {
                     rel="noopener noreferrer"
                     className="w-full md:w-auto inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 shadow-lg shadow-primary/20"
                     >
-                    Install
+                    Install from Google Play
                     </a>
                 </div>
                 </div>
