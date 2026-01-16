@@ -5,6 +5,14 @@ The official app store for Xopoc Coptic applications.
 
 ## Version History
 
+### v2.2.5
+- **UI Fix (Contrast)**: Added smart text color adjustment for the "Download" button in App Details.
+    - Uses YIQ color space formula to detect if the app's dominant theme color is light or dark.
+    - Switches text color to Black for light backgrounds and White for dark backgrounds to ensure readability.
+- **Scraper Fix**: 
+    - Updated regex for **Total Downloads** and **Reviews Count** to support new Google Play Store HTML layouts where labels are separated from numbers by tags.
+    - Added fallback search for JSON data patterns (e.g., `["10K+"]`) if HTML extraction fails.
+
 ### v2.2.4
 - **Scraper Enhancements**: 
     - Added robust fetching for **Total Installs**, **Update Date**, **Latest Version**, **Highest Rating**, and **Total Reviews**.

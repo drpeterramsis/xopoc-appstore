@@ -50,7 +50,7 @@ export default async function handler(request, response) {
 
     const html = await res.text();
 
-    // --- Robust Regex Scrapers (Updated v2.2.4) ---
+    // --- Robust Regex Scrapers (Updated v2.2.5) ---
     
     // 1. Icon
     let iconUrl = '';
@@ -73,16 +73,24 @@ export default async function handler(request, response) {
     }
 
     // 3. Downloads (Total Installs)
-    // Matches: 10K+ downloads / 10K+ عملية تنزيل
+    // Updated Logic: Check for direct text, then separated divs, then JSON fallback
     let downloads = '';
-    const downloadRegex = />\s*([0-9,.]+[K|M|B|k|m|b]?\+)\s*(downloads|عملية تنزيل)/i;
-    const downloadMatch = html.match(downloadRegex);
+    // Pattern A: >10K+</div>...Downloads (loose match)
+    const downloadRegexA = />\s*([0-9,.]+[K|M|B|k|m|b]?\+)\s*<\/[^>]+>.*?>(downloads|عملية تنزيل|عمليات التنزيل)</is;
+    // Pattern B: >10K+ downloads (tight match)
+    const downloadRegexB = />\s*([0-9,.]+[K|M|B|k|m|b]?\+)\s*(downloads|عملية تنزيل)/i;
     
-    if (downloadMatch) {
-       downloads = downloadMatch[1].trim();
+    const dlMatchA = html.match(downloadRegexA);
+    const dlMatchB = html.match(downloadRegexB);
+
+    if (dlMatchA) {
+        downloads = dlMatchA[1].trim();
+    } else if (dlMatchB) {
+        downloads = dlMatchB[1].trim();
     } else {
-        // Fallback: look for script data often found in Play Store source
-        const scriptDownload = html.match(/\["([0-9,.]+[K|M|B]?\+)"\]/);
+        // Fallback: look for generic script data patterns (ds:5)
+        // often found as ["1000+"]
+        const scriptDownload = html.match(/\[\s*"([0-9,.]+[K|M|B]?\+)"\s*\]/);
         if (scriptDownload) downloads = scriptDownload[1];
     }
 
@@ -110,10 +118,18 @@ export default async function handler(request, response) {
     }
 
     // 6. Reviews Count (Total Reviews)
-    // Arabic: 1.25 ألف مراجعة
+    // Updated: Look for parens, or separated text
     let reviewsCount = '';
-    const reviewsMatch = html.match(/>([0-9,.]+\s*[K|M|B|ألف|مليون]?)\s*(reviews|مراجعة)</i);
-    if (reviewsMatch) reviewsCount = reviewsMatch[1];
+    // Pattern: >1.25K reviews<
+    const reviewsMatchA = html.match(/>([0-9,.]+\s*[K|M|B|ألف|مليون]?)\s*(reviews|مراجعة)</i);
+    // Pattern: 1.25K (in some context) often near stars
+    const reviewsMatchB = html.match(/aria-label="([0-9,.]+[K|M|B]?) reviews"/);
+
+    if (reviewsMatchA) {
+        reviewsCount = reviewsMatchA[1];
+    } else if (reviewsMatchB) {
+        reviewsCount = reviewsMatchB[1];
+    }
 
     // 7. Last Updated (Update Date)
     let updatedOn = '';

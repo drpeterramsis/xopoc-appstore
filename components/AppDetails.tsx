@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowRight, Star, Download, ShieldCheck, Loader2, AlertCircle, Calendar, Tag, MessageSquare } from 'lucide-react';
@@ -13,6 +14,7 @@ const AppDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [usingFallback, setUsingFallback] = useState(false);
   const [dominantColor, setDominantColor] = useState<string>('');
+  const [isLightColor, setIsLightColor] = useState(false); // Track if background is light
   
   // Canvas for color extraction
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -59,7 +61,7 @@ const AppDetails: React.FC = () => {
     fetchData();
   }, [id, basicAppInfo]);
 
-  // Extract color logic
+  // Extract color logic & Calculate Contrast
   const extractColor = (url: string) => {
     const img = new Image();
     img.crossOrigin = "Anonymous";
@@ -74,7 +76,14 @@ const AppDetails: React.FC = () => {
         canvas.height = 1;
         ctx.drawImage(img, 0, 0, 1, 1);
         const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data;
+        
         setDominantColor(`rgb(${r},${g},${b})`);
+
+        // Calculate YIQ brightness (human eye perception)
+        // Formula: ((R*299)+(G*587)+(B*114))/1000
+        // If result >= 128, color is light.
+        const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+        setIsLightColor(yiq >= 128);
     };
   };
 
@@ -91,8 +100,14 @@ const AppDetails: React.FC = () => {
 
   // Dynamic Styles
   const headerStyle = dominantColor ? { backgroundColor: dominantColor, color: '#fff' } : {};
-  const buttonStyle = dominantColor ? { backgroundColor: dominantColor } : {};
   const textStyle = dominantColor ? { color: dominantColor } : {};
+  
+  // Dynamic Button Style
+  // Background is dominantColor, Text is black if light, white if dark.
+  const buttonStyle = {
+      backgroundColor: dominantColor || '#C62828',
+      color: isLightColor ? '#000000' : '#ffffff'
+  };
 
   return (
     <div className="min-h-screen bg-background pt-20 pb-20 animate-fade-in text-text font-sans relative">
@@ -106,14 +121,14 @@ const AppDetails: React.FC = () => {
         <div className="flex items-center gap-2">
             <button 
             onClick={() => navigate(-1)}
-            className={`flex items-center px-3 py-2 rounded-lg transition-colors group ${dominantColor ? 'text-white hover:bg-white/20' : 'text-text hover:bg-gray-100'}`}
+            className={`flex items-center px-3 py-2 rounded-lg transition-colors group ${dominantColor ? (isLightColor ? 'text-black hover:bg-black/10' : 'text-white hover:bg-white/20') : 'text-text hover:bg-gray-100'}`}
             >
             <ArrowRight size={20} className="transform rotate-180 ml-2 group-hover:-translate-x-1 transition-transform" />
             <span className="font-bold">عودة</span>
             </button>
         </div>
         
-        <span className={`text-lg font-bold truncate max-w-[200px] md:max-w-md text-right ${dominantColor ? 'text-white' : 'text-text'}`}>
+        <span className={`text-lg font-bold truncate max-w-[200px] md:max-w-md text-right ${dominantColor ? (isLightColor ? 'text-black' : 'text-white') : 'text-text'}`}>
           {basicAppInfo.title}
         </span>
       </div>
@@ -202,8 +217,8 @@ const AppDetails: React.FC = () => {
                     href={basicAppInfo.playStoreUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full md:w-auto inline-flex items-center justify-center text-white font-bold py-3 px-10 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105"
-                    style={{ backgroundColor: dominantColor || '#C62828' }}
+                    className="w-full md:w-auto inline-flex items-center justify-center font-bold py-3 px-10 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105"
+                    style={buttonStyle}
                     >
                     تحميل من جوجل بلاي
                     </a>
