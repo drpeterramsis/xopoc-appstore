@@ -28,10 +28,22 @@ const Home: React.FC = () => {
     AppCategory.SERVICES
   ];
 
+  // Randomize function for Hero section
+  const shuffleArray = (array: AppData[]) => {
+    const newArr = [...array];
+    for (let i = newArr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+    }
+    return newArr;
+  };
+
   // Get all apps marked as featured for the Hero Slider
+  // UPDATED: Now randomizes the order on every mount (site open)
   const featuredApps = useMemo(() => {
     const featured = APPS_DATA.filter(app => app.featured);
-    return featured.length > 0 ? featured : [APPS_DATA[0]];
+    // Return shuffled array if apps exist, otherwise fallback
+    return featured.length > 0 ? shuffleArray(featured) : [APPS_DATA[0]];
   }, []);
 
   // Filter Logic
@@ -169,7 +181,7 @@ const Home: React.FC = () => {
         <div className="flex flex-col justify-center items-center max-w-7xl mx-auto px-4 text-xs text-gray-500 gap-1">
            <span className="text-secondary font-bold">منصة تطوير البرامج المسيحية المتخصصة للموبايل</span>
            <div className="flex justify-between w-full font-bold mt-1">
-             <span>v2.2.2</span>
+             <span>v2.2.3</span>
              <span>© {new Date().getFullYear()} برامج خورس - Xopoc Store</span>
            </div>
         </div>

@@ -5,6 +5,14 @@ The official app store for Xopoc Coptic applications.
 
 ## Version History
 
+### v2.2.3
+- **Featured Apps**: Now displays featured apps in a random order every time the site is opened to give exposure to all apps.
+- **Hero UX**: 
+    - Reordered Mobile layout: Icon (Top) -> Name -> Description -> Stats -> Button.
+    - Improved Description Summary: Automatically removes the app title from the description text.
+    - Added Stats: Now displays Total Downloads and Review counts in the Hero section alongside the rating.
+- **Stats Integration**: Ensured Installs, Version, and Review counts are fetched and displayed prominently.
+
 ### v2.2.2
 - **Logo Update**: Replaced generic "X" text logo with brand image (`logo.webp`).
 - **UI Update**: Moved tagline to footer for better spacing.

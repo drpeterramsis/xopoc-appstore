@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star } from 'lucide-react';
+import { Star, Download, MessageSquare } from 'lucide-react';
 import { AppData } from '../types';
 
 interface HeroProps {
@@ -23,7 +23,7 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
 
   const currentApp = featuredApps[currentIndex];
 
-  // Fetch metadata for featured apps (if needed)
+  // Fetch metadata for featured apps
   useEffect(() => {
     const fetchMeta = async () => {
       if (fetchedData[currentApp.id]) return;
@@ -50,15 +50,25 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
   const appDetails = fetchedData[currentApp.id] || {};
   const iconUrl = appDetails.iconUrl || null;
   const rating = appDetails.rating || 5.0; // Default to 5 if loading
+  const downloads = appDetails.downloads;
+  const reviewsCount = appDetails.reviewsCount;
   
-  // Logic to clean description: remove title if it starts with it
+  // Logic to clean description: 
+  // 1. Remove title if present at start.
+  // 2. Remove common prefixes.
+  // 3. Truncate for summary.
   let description = appDetails.description || currentApp.title;
-  if (description.startsWith(currentApp.title)) {
-      description = description.substring(currentApp.title.length).replace(/^[\s-:]+/, '');
-  }
-  // Limit length
-  if (description.length > 150) {
-      description = description.substring(0, 150) + '...';
+  
+  // Remove title case-insensitively
+  const titleRegex = new RegExp(`^${currentApp.title}\\s*[:|-]?\\s*`, 'i');
+  description = description.replace(titleRegex, '').trim();
+  
+  // Remove leading non-alphanumeric chars
+  description = description.replace(/^[\s-:]+/, '');
+
+  // Limit length for Hero summary
+  if (description.length > 120) {
+      description = description.substring(0, 120) + '...';
   }
 
   const handleHeroClick = () => {
@@ -67,7 +77,7 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
 
   return (
     <div 
-      className="relative w-full h-[400px] md:h-[350px] rounded-3xl overflow-hidden shadow-2xl mb-12 transition-all duration-500 ease-in-out group cursor-pointer"
+      className="relative w-full min-h-[450px] md:h-[350px] rounded-3xl overflow-hidden shadow-2xl mb-12 transition-all duration-500 ease-in-out group cursor-pointer"
       onClick={handleHeroClick}
     >
       
@@ -75,62 +85,89 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
       <div 
         className="absolute inset-0 bg-cover bg-center transition-all duration-700 ease-in-out blur-lg scale-110"
         style={{ 
-          // UPDATED: Changed default gradient from Green to Blue (Secondary)
           backgroundImage: iconUrl ? `url(${iconUrl})` : 'linear-gradient(to right, #1565C0, #0D47A1)',
-          filter: 'blur(20px) brightness(0.4)' // Darken the background for text contrast
+          filter: 'blur(20px) brightness(0.4)' 
         }}
       />
-      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" /> {/* Overlay for extra readability */}
+      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
 
-      <div className="relative z-10 flex flex-col md:flex-row items-center justify-center h-full p-6 md:p-12 gap-8">
+      {/* 
+         LAYOUT UPDATE:
+         Mobile: Flex Column (Icon first, then Text)
+         Desktop: Flex Row Reverse (Since RTL, this puts Text on Right, Icon on Left)
+      */}
+      <div className="relative z-10 flex flex-col md:flex-row-reverse items-center justify-center h-full p-6 md:p-12 gap-6 md:gap-8">
         
-        {/* Animated Text Content */}
-        <div key={`text-${currentApp.id}`} className="flex-grow text-center md:text-right animate-fade-in-up">
-          {/* UPDATED: Changed green badge styles to blue (secondary) */}
-          <div className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-wider text-blue-300 uppercase bg-blue-900/50 rounded-full border border-blue-500/30 backdrop-blur-sm">
-            تطبيق مميز
-          </div>
-          {/* UPDATED: Changed hover text color from green to blue */}
-          <h1 dir="rtl" className="text-3xl md:text-5xl font-bold text-white mb-2 md:mb-4 drop-shadow-md font-sans group-hover:text-blue-300 transition-colors">
-            {currentApp.title}
-          </h1>
-          <p dir="rtl" className="text-gray-200 text-base md:text-lg mb-6 max-w-2xl ml-auto font-sans line-clamp-2 drop-shadow-sm">
-            {description}
-          </p>
-          
-          <div className="flex flex-wrap items-center justify-center md:justify-end gap-4" onClick={(e) => e.stopPropagation()}>
-             <div className="flex items-center text-white px-4 py-2 bg-white/10 rounded-full backdrop-blur-md border border-white/20">
-              <span className="font-bold mr-2 text-lg">{rating}</span>
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <Star 
-                    key={i} 
-                    size={16} 
-                    className={i < Math.floor(rating) ? "text-yellow-400 fill-current" : "text-gray-400"} 
-                  />
-                ))}
-              </div>
-            </div>
-             <a 
-              href={currentApp.playStoreUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-full transition-all duration-300 flex items-center shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-1"
-            >
-              حمله من جوجل بلاي
-            </a>
-          </div>
-        </div>
-
-        {/* Icon */}
+        {/* Icon (Order 1 on Mobile) */}
         <div className="flex-shrink-0 relative">
           <img 
             key={`img-${currentApp.id}`}
             src={iconUrl || ''} 
             alt={currentApp.title}
-            className={`w-32 h-32 md:w-48 md:h-48 rounded-3xl shadow-2xl object-cover ring-4 ring-white/20 transition-all duration-500 group-hover:scale-105 ${iconUrl ? 'opacity-100' : 'opacity-0'}`}
+            className={`w-28 h-28 md:w-48 md:h-48 rounded-3xl shadow-2xl object-cover ring-4 ring-white/20 transition-all duration-500 group-hover:scale-105 ${iconUrl ? 'opacity-100' : 'opacity-0'}`}
           />
         </div>
+
+        {/* Text Content (Order 2 on Mobile) */}
+        <div key={`text-${currentApp.id}`} className="flex-grow text-center md:text-right animate-fade-in-up flex flex-col items-center md:items-end">
+          
+          <div className="inline-block px-3 py-1 mb-2 text-xs font-bold tracking-wider text-blue-300 uppercase bg-blue-900/50 rounded-full border border-blue-500/30 backdrop-blur-sm">
+            تطبيق مميز
+          </div>
+          
+          <h1 dir="rtl" className="text-2xl md:text-5xl font-bold text-white mb-2 md:mb-3 drop-shadow-md font-sans group-hover:text-blue-300 transition-colors">
+            {currentApp.title}
+          </h1>
+          
+          <p dir="rtl" className="text-gray-200 text-sm md:text-lg mb-4 max-w-xl font-sans leading-relaxed drop-shadow-sm">
+            {description}
+          </p>
+          
+          {/* Stats Row: Ratings & Downloads */}
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 mb-5" onClick={(e) => e.stopPropagation()}>
+             {/* Rating Badge */}
+             <div className="flex items-center text-white px-3 py-1.5 bg-white/10 rounded-xl backdrop-blur-md border border-white/20">
+              <span className="font-bold mr-2 text-sm">{rating}</span>
+              <div className="flex">
+                {[...Array(5)].map((_, i) => (
+                  <Star 
+                    key={i} 
+                    size={14} 
+                    className={i < Math.floor(rating) ? "text-yellow-400 fill-current" : "text-gray-400"} 
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Downloads Badge */}
+            {downloads && (
+                <div className="flex items-center text-white px-3 py-1.5 bg-green-600/20 rounded-xl backdrop-blur-md border border-green-400/30">
+                     <span className="font-bold mr-1 text-sm">{downloads}</span>
+                     <Download size={14} className="text-green-400" />
+                </div>
+            )}
+            
+            {/* Reviews Count (Optional, good for credibility) */}
+             {reviewsCount && (
+                <div className="hidden sm:flex items-center text-white px-3 py-1.5 bg-purple-600/20 rounded-xl backdrop-blur-md border border-purple-400/30">
+                     <span className="font-bold mr-1 text-sm">{reviewsCount}</span>
+                     <MessageSquare size={14} className="text-purple-400" />
+                </div>
+            )}
+          </div>
+
+          <a 
+              href={currentApp.playStoreUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-full transition-all duration-300 flex items-center shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-1 w-full md:w-auto justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              حمله من جوجل بلاي
+              <Download size={18} className="ml-2" />
+          </a>
+        </div>
+
       </div>
 
       {/* Dots Indicator */}
