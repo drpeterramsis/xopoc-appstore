@@ -33,19 +33,18 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, onCategorySelect, categories,
   };
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100' : 'bg-transparent py-4'}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-md border-b border-gray-100' : 'bg-transparent py-4'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
           {/* Logo */}
-          <div className="flex-shrink-0 flex items-center cursor-pointer gap-2" onClick={() => window.location.reload()}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-emerald-400 flex items-center justify-center shadow-lg shadow-primary/20">
-              <span className="text-white font-bold text-2xl">X</span>
+          <div className="flex-shrink-0 flex items-center cursor-pointer gap-3" onClick={() => window.location.reload()}>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20">
+              <span className="text-white font-extrabold text-2xl drop-shadow-md">X</span>
             </div>
             <div className="flex flex-col items-start">
-                 <span className="text-text font-bold text-lg tracking-tight font-sans">برامج خورس</span>
-                 <span className="text-primary text-[10px] font-bold -mt-1 hidden sm:block">منصة تطوير البرامج المسيحية المتخصصة للموبايل</span>
-                 <span className="text-primary text-xs font-bold -mt-1 sm:hidden">خورس</span>
+                 <span className="text-primary font-bold text-xl tracking-tight font-sans">برامج خورس</span>
+                 <span className="text-secondary text-[10px] font-bold -mt-1 hidden sm:block">منصة تطوير البرامج المسيحية المتخصصة للموبايل</span>
             </div>
            
           </div>
@@ -56,10 +55,10 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, onCategorySelect, categories,
               <button
                 key={cat}
                 onClick={() => onCategorySelect(cat)}
-                className={`px-3 py-2 rounded-lg text-sm font-bold transition-colors ml-1 ${
+                className={`px-3 py-2 rounded-lg text-sm font-bold transition-all ml-1 ${
                   activeCategory === cat 
-                    ? 'text-primary bg-primary/10' 
-                    : 'text-gray-500 hover:text-text hover:bg-gray-100'
+                    ? 'text-white bg-gradient-to-r from-primary to-primary-dark shadow-md' 
+                    : 'text-gray-600 hover:text-primary hover:bg-red-50'
                 }`}
               >
                 {cat}
@@ -78,7 +77,7 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, onCategorySelect, categories,
                 value={query}
                 onChange={handleSearchChange}
                 placeholder="بحث..."
-                className="block w-full pr-10 pl-4 py-2 border border-gray-200 rounded-full leading-5 bg-gray-50 text-text placeholder-gray-400 focus:outline-none focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary sm:text-sm transition-all duration-300 text-right"
+                className="block w-full pr-10 pl-4 py-2 border border-gray-200 rounded-full leading-5 bg-gray-50 text-text placeholder-gray-400 focus:outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 sm:text-sm transition-all duration-300 text-right"
               />
             </form>
           </div>

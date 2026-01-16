@@ -1,4 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import { AppData } from '../types';
 
@@ -7,6 +9,7 @@ interface HeroProps {
 }
 
 const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fetchedData, setFetchedData] = useState<Record<string, Partial<AppData>>>({});
 
@@ -47,10 +50,26 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
   const appDetails = fetchedData[currentApp.id] || {};
   const iconUrl = appDetails.iconUrl || null;
   const rating = appDetails.rating || 5.0; // Default to 5 if loading
-  const description = appDetails.description || currentApp.title;
+  
+  // Logic to clean description: remove title if it starts with it
+  let description = appDetails.description || currentApp.title;
+  if (description.startsWith(currentApp.title)) {
+      description = description.substring(currentApp.title.length).replace(/^[\s-:]+/, '');
+  }
+  // Limit length
+  if (description.length > 150) {
+      description = description.substring(0, 150) + '...';
+  }
+
+  const handleHeroClick = () => {
+    navigate(`/app/${currentApp.id}`);
+  };
 
   return (
-    <div className="relative w-full h-[400px] md:h-[350px] rounded-3xl overflow-hidden shadow-2xl mb-12 transition-all duration-500 ease-in-out group">
+    <div 
+      className="relative w-full h-[400px] md:h-[350px] rounded-3xl overflow-hidden shadow-2xl mb-12 transition-all duration-500 ease-in-out group cursor-pointer"
+      onClick={handleHeroClick}
+    >
       
       {/* Dynamic Background Image (Dark Faded) */}
       <div 
@@ -60,7 +79,7 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
           filter: 'blur(20px) brightness(0.4)' // Darken the background for text contrast
         }}
       />
-      <div className="absolute inset-0 bg-black/40" /> {/* Overlay for extra readability */}
+      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" /> {/* Overlay for extra readability */}
 
       <div className="relative z-10 flex flex-col md:flex-row items-center justify-center h-full p-6 md:p-12 gap-8">
         
@@ -69,14 +88,14 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
           <div className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-wider text-green-300 uppercase bg-green-900/50 rounded-full border border-green-500/30 backdrop-blur-sm">
             تطبيق مميز
           </div>
-          <h1 dir="rtl" className="text-3xl md:text-5xl font-bold text-white mb-2 md:mb-4 drop-shadow-md font-sans">
+          <h1 dir="rtl" className="text-3xl md:text-5xl font-bold text-white mb-2 md:mb-4 drop-shadow-md font-sans group-hover:text-green-300 transition-colors">
             {currentApp.title}
           </h1>
           <p dir="rtl" className="text-gray-200 text-base md:text-lg mb-6 max-w-2xl ml-auto font-sans line-clamp-2 drop-shadow-sm">
             {description}
           </p>
           
-          <div className="flex flex-wrap items-center justify-center md:justify-end gap-4">
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-4" onClick={(e) => e.stopPropagation()}>
              <div className="flex items-center text-white px-4 py-2 bg-white/10 rounded-full backdrop-blur-md border border-white/20">
               <span className="font-bold mr-2 text-lg">{rating}</span>
               <div className="flex">
@@ -106,13 +125,13 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
             key={`img-${currentApp.id}`}
             src={iconUrl || ''} 
             alt={currentApp.title}
-            className={`w-32 h-32 md:w-48 md:h-48 rounded-3xl shadow-2xl object-cover ring-4 ring-white/20 transition-opacity duration-500 ${iconUrl ? 'opacity-100' : 'opacity-0'}`}
+            className={`w-32 h-32 md:w-48 md:h-48 rounded-3xl shadow-2xl object-cover ring-4 ring-white/20 transition-all duration-500 group-hover:scale-105 ${iconUrl ? 'opacity-100' : 'opacity-0'}`}
           />
         </div>
       </div>
 
       {/* Dots Indicator */}
-      <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-20">
+      <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-20" onClick={(e) => e.stopPropagation()}>
         {featuredApps.map((_, idx) => (
           <button 
             key={idx}

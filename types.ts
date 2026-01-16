@@ -13,6 +13,11 @@ export interface AppData {
   iconUrl?: string;
   screenshots?: string[];
   featured?: boolean;
+  
+  // New Metadata
+  version?: string;
+  updatedOn?: string;
+  reviewsCount?: string;
 }
 
 export enum AppCategory {

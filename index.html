@@ -11,8 +11,10 @@
         theme: {
           extend: {
             colors: {
-              primary: '#0F9D58', // Google Play Green
-              'primary-dark': '#0B864A',
+              primary: '#C62828', // Xopoc Red (Material Red 800)
+              'primary-dark': '#B71C1C', // Darker Red
+              secondary: '#1565C0', // Xopoc Blue (Material Blue 800)
+              'secondary-dark': '#0D47A1',
               surface: '#ffffff', // Light mode surface
               'surface-hover': '#f1f5f9',
               background: '#f8fafc', // Light mode background
@@ -22,6 +24,16 @@
             fontFamily: {
               sans: ['Cairo', 'Inter', 'sans-serif'],
             },
+            animation: {
+              'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+              'bounce-slow': 'bounce 3s infinite',
+            },
+            keyframes: {
+              fadeInUp: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              }
+            }
           },
         },
       }
@@ -40,11 +52,11 @@
         background: #f1f1f1;
       }
       ::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
+        background: #90a4ae;
         border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a8;
+        background: #607d8b;
       }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">

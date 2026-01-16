@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
@@ -5,7 +6,7 @@ import Hero from './Hero';
 import AppCard from './AppCard';
 import { APPS_DATA } from '../constants';
 import { AppCategory, AppData } from '../types';
-import { Frown } from 'lucide-react';
+import { Frown, ArrowUp } from 'lucide-react';
 
 const CATEGORY_MAIN = 'الرئيسية';
 const CATEGORY_SPIRIT = 'غذاء الروح';
@@ -14,6 +15,7 @@ const Home: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<string>(CATEGORY_MAIN);
   const [filteredApps, setFilteredApps] = useState<AppData[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const navigate = useNavigate();
 
   // Custom Category List including the "Spirit Bread" filter
@@ -46,9 +48,6 @@ const Home: React.FC = () => {
     else if (activeCategory === CATEGORY_SPIRIT) {
       results = APPS_DATA.filter(app => app.developer === 'Sp Bread');
     }
-    // Specific Categories (Bible, Hymns, etc)
-    // Filter Xopoc apps by category (Assume Xopoc is default context unless Spirit Bread selected)
-    // The requirement "Xopoc only without Spirit Bread" implies browsing categories should likely default to Xopoc
     else {
       results = APPS_DATA.filter(app => 
         app.developer === 'Xopoc' && app.category === activeCategory
@@ -57,6 +56,19 @@ const Home: React.FC = () => {
 
     setFilteredApps(results);
   }, [activeCategory, isSearching]);
+
+  // Scroll to Top Logic
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleCategorySelect = (category: string) => {
     setIsSearching(false);
@@ -68,13 +80,11 @@ const Home: React.FC = () => {
   const handleSearch = (query: string) => {
     if (!query.trim()) {
       setIsSearching(false);
-      // Trigger re-filter based on activeCategory
       setActiveCategory(activeCategory); 
       return;
     }
 
     setIsSearching(true);
-    // Basic Local Search (Search everything, regardless of developer)
     const lowerQuery = query.toLowerCase();
     const results = APPS_DATA.filter(app => 
       app.title.toLowerCase().includes(lowerQuery) || 
@@ -104,11 +114,11 @@ const Home: React.FC = () => {
 
         {/* Category Title */}
         <div className="flex items-center justify-between mb-6 flex-row-reverse">
-          <h2 className="text-2xl font-bold text-text">
+          <h2 className="text-2xl font-bold text-text border-r-4 border-primary pr-3">
             {isSearching ? 'نتائج البحث' : activeCategory}
           </h2>
-          <span className="text-text-muted text-sm font-medium">
-            {filteredApps.length} {filteredApps.length === 1 ? 'برنامج' : 'برامج'}
+          <span className="text-white bg-secondary px-3 py-1 rounded-full text-xs font-bold shadow-sm">
+            {filteredApps.length}
           </span>
         </div>
 
@@ -144,10 +154,19 @@ const Home: React.FC = () => {
 
       </main>
       
+      {/* Scroll To Top Button */}
+      <button 
+        onClick={scrollToTop}
+        className={`fixed bottom-20 right-6 z-50 p-3 bg-primary text-white rounded-full shadow-lg hover:bg-primary-dark transition-all duration-300 transform ${showScrollTop ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'}`}
+        aria-label="Scroll to top"
+      >
+        <ArrowUp size={24} />
+      </button>
+
       {/* Fixed Footer */}
       <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 text-center z-50 shadow-lg-up">
         <div className="flex justify-between items-center max-w-7xl mx-auto px-4 text-xs font-bold text-gray-500">
-           <span>v2.1.0</span>
+           <span>v2.2.1</span>
            <span>© {new Date().getFullYear()} برامج خورس - Xopoc Store</span>
         </div>
       </footer>

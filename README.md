@@ -1,20 +1,27 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
 
-# Run and deploy your AI Studio app
+# Xopoc App Store
 
-This contains everything you need to run your app locally.
+The official app store for Xopoc Coptic applications.
 
-View your app in AI Studio: https://ai.studio/apps/drive/1HaVbeqeGbGleI6vq09urSRYIQgRw8a_5
+## Version History
 
-## Run Locally
+### v2.2.1
+- **Critical Fix**: Updated Play Store scraping logic (regex) to handle recent Google Play layout changes, improving fetching of Rating, Downloads, and Version info.
+- **UX Improvement**: Clicking the Featured App card in the Hero section now opens the internal details page.
+- **UI Tweaks**: Smart description summary in Hero section to avoid repeating the App Title.
+- **Deploy**: Added configuration for easier GitHub Pages deployment.
 
-**Prerequisites:**  Node.js
+### v2.2.0
+- **Theme Update**: Changed global color scheme to Xopoc Red and Blue to match the brand identity.
+- **Dynamic Theming**: Individual app pages now dynamically adapt their color scheme based on the app icon's dominant color.
+- **New Metadata**: Added display for App Version, Last Updated Date, and Total Reviews count.
+- **Scroll to Top**: Added a floating button to easily scroll back to the top of the page.
+- **Scraper Upgrade**: Improved `api/app.js` to parse localized Arabic data from Google Play for version and dates.
 
+### v2.1.0
+- **Arabic Localization**: Full translation of the interface to Arabic.
+- **App Categorization**: Separated "Spirit Bread" apps from main Xopoc apps.
+- **UI Improvements**: Added animated Hero section and cleaner card design.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### v1.0.0
+- Initial Release.
