@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Search, X, Menu } from 'lucide-react';
 
@@ -37,14 +38,15 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, onCategorySelect, categories,
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
-          {/* Logo */}
+          {/* Logo Section */}
           <div className="flex-shrink-0 flex items-center cursor-pointer gap-3" onClick={() => window.location.reload()}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20">
-              <span className="text-white font-extrabold text-2xl drop-shadow-md">X</span>
+            {/* UPDATED: Path changed to "logo.webp" */}
+            <div className="w-12 h-12 flex items-center justify-center">
+               <img src="logo.webp" alt="Xopoc Logo" className="w-full h-full object-contain drop-shadow-md hover:scale-105 transition-transform" />
             </div>
+            
             <div className="flex flex-col items-start">
                  <span className="text-primary font-bold text-xl tracking-tight font-sans">برامج خورس</span>
-                 <span className="text-secondary text-[10px] font-bold -mt-1 hidden sm:block">منصة تطوير البرامج المسيحية المتخصصة للموبايل</span>
             </div>
            
           </div>

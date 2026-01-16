@@ -1,3 +1,4 @@
+
 import { AppCategory, AppData } from './types';
 
 // The base directory of apps. 
@@ -70,7 +71,8 @@ export const APPS_DATA: AppData[] = [
     id: 'io.kodular.drpeterramsis2007.Colored_Kholagy',
     title: 'خورس Xopoc',
     developer: 'Xopoc',
-    category: AppCategory.HYMNS,
+    // UPDATED: Changed from HYMNS to SERVICES as requested
+    category: AppCategory.SERVICES, 
     playStoreUrl: 'https://play.google.com/store/apps/details?id=io.kodular.drpeterramsis2007.Colored_Kholagy',
     featured: true
   },

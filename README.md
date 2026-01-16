@@ -5,6 +5,12 @@ The official app store for Xopoc Coptic applications.
 
 ## Version History
 
+### v2.2.2
+- **Logo Update**: Replaced generic "X" text logo with brand image (`logo.webp`).
+- **UI Update**: Moved tagline to footer for better spacing.
+- **Theme Update**: Changed Hero section primary color from Green to Blue (Secondary Brand Color).
+- **Data Correction**: Moved "Xopoc Khoros" app to "Services" category.
+
 ### v2.2.1
 - **Critical Fix**: Updated Play Store scraping logic (regex) to handle recent Google Play layout changes, improving fetching of Rating, Downloads, and Version info.
 - **UX Improvement**: Clicking the Featured App card in the Hero section now opens the internal details page.

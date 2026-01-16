@@ -165,9 +165,13 @@ const Home: React.FC = () => {
 
       {/* Fixed Footer */}
       <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 text-center z-50 shadow-lg-up">
-        <div className="flex justify-between items-center max-w-7xl mx-auto px-4 text-xs font-bold text-gray-500">
-           <span>v2.2.1</span>
-           <span>© {new Date().getFullYear()} برامج خورس - Xopoc Store</span>
+        {/* UPDATED: Added Tagline and updated version */}
+        <div className="flex flex-col justify-center items-center max-w-7xl mx-auto px-4 text-xs text-gray-500 gap-1">
+           <span className="text-secondary font-bold">منصة تطوير البرامج المسيحية المتخصصة للموبايل</span>
+           <div className="flex justify-between w-full font-bold mt-1">
+             <span>v2.2.2</span>
+             <span>© {new Date().getFullYear()} برامج خورس - Xopoc Store</span>
+           </div>
         </div>
       </footer>
     </div>

@@ -75,7 +75,8 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
       <div 
         className="absolute inset-0 bg-cover bg-center transition-all duration-700 ease-in-out blur-lg scale-110"
         style={{ 
-          backgroundImage: iconUrl ? `url(${iconUrl})` : 'linear-gradient(to right, #0F9D58, #0B864A)',
+          // UPDATED: Changed default gradient from Green to Blue (Secondary)
+          backgroundImage: iconUrl ? `url(${iconUrl})` : 'linear-gradient(to right, #1565C0, #0D47A1)',
           filter: 'blur(20px) brightness(0.4)' // Darken the background for text contrast
         }}
       />
@@ -85,10 +86,12 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
         
         {/* Animated Text Content */}
         <div key={`text-${currentApp.id}`} className="flex-grow text-center md:text-right animate-fade-in-up">
-          <div className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-wider text-green-300 uppercase bg-green-900/50 rounded-full border border-green-500/30 backdrop-blur-sm">
+          {/* UPDATED: Changed green badge styles to blue (secondary) */}
+          <div className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-wider text-blue-300 uppercase bg-blue-900/50 rounded-full border border-blue-500/30 backdrop-blur-sm">
             تطبيق مميز
           </div>
-          <h1 dir="rtl" className="text-3xl md:text-5xl font-bold text-white mb-2 md:mb-4 drop-shadow-md font-sans group-hover:text-green-300 transition-colors">
+          {/* UPDATED: Changed hover text color from green to blue */}
+          <h1 dir="rtl" className="text-3xl md:text-5xl font-bold text-white mb-2 md:mb-4 drop-shadow-md font-sans group-hover:text-blue-300 transition-colors">
             {currentApp.title}
           </h1>
           <p dir="rtl" className="text-gray-200 text-base md:text-lg mb-6 max-w-2xl ml-auto font-sans line-clamp-2 drop-shadow-sm">
@@ -112,7 +115,7 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
               href={currentApp.playStoreUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-full transition-all duration-300 flex items-center shadow-lg hover:shadow-green-500/30 transform hover:-translate-y-1"
+              className="px-8 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-full transition-all duration-300 flex items-center shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-1"
             >
               حمله من جوجل بلاي
             </a>
