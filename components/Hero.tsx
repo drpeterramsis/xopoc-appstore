@@ -1,62 +1,125 @@
-import React from 'react';
-import { Star, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Star } from 'lucide-react';
 import { AppData } from '../types';
 
 interface HeroProps {
-  featuredApp: AppData;
+  featuredApps: AppData[];
 }
 
-const Hero: React.FC<HeroProps> = ({ featuredApp }) => {
-  if (!featuredApp) return null;
+const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [fetchedData, setFetchedData] = useState<Record<string, Partial<AppData>>>({});
+
+  // Cycle through apps
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % featuredApps.length);
+    }, 5000); // 5 Seconds per app
+    return () => clearInterval(timer);
+  }, [featuredApps.length]);
+
+  const currentApp = featuredApps[currentIndex];
+
+  // Fetch metadata for featured apps (if needed)
+  useEffect(() => {
+    const fetchMeta = async () => {
+      if (fetchedData[currentApp.id]) return;
+
+      // Check session
+      const cached = sessionStorage.getItem(`app_${currentApp.id}`);
+      if (cached) {
+        setFetchedData(prev => ({ ...prev, [currentApp.id]: JSON.parse(cached) }));
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/app?id=${currentApp.id}`);
+        if(res.ok) {
+           const data = await res.json();
+           setFetchedData(prev => ({ ...prev, [currentApp.id]: data }));
+           sessionStorage.setItem(`app_${currentApp.id}`, JSON.stringify(data));
+        }
+      } catch (e) { console.error(e); }
+    };
+    fetchMeta();
+  }, [currentApp.id, fetchedData]);
+
+  const appDetails = fetchedData[currentApp.id] || {};
+  const iconUrl = appDetails.iconUrl || null;
+  const rating = appDetails.rating || 5.0; // Default to 5 if loading
+  const description = appDetails.description || currentApp.title;
 
   return (
-    <div className="relative w-full rounded-3xl overflow-hidden bg-gradient-to-r from-gray-900 to-gray-800 shadow-2xl border border-white/10 mb-8 sm:mb-12">
-      {/* Background decoration */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+    <div className="relative w-full h-[400px] md:h-[350px] rounded-3xl overflow-hidden shadow-2xl mb-12 transition-all duration-500 ease-in-out group">
       
-      <div className="relative z-10 flex flex-col md:flex-row items-center p-6 md:p-12 gap-8">
-        <div className="flex-shrink-0">
-          <img 
-            src={featuredApp.iconUrl} 
-            alt={featuredApp.title}
-            className="w-32 h-32 md:w-48 md:h-48 rounded-3xl shadow-2xl object-cover ring-4 ring-white/10"
-          />
-        </div>
+      {/* Dynamic Background Image (Dark Faded) */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center transition-all duration-700 ease-in-out blur-lg scale-110"
+        style={{ 
+          backgroundImage: iconUrl ? `url(${iconUrl})` : 'linear-gradient(to right, #0F9D58, #0B864A)',
+          filter: 'blur(20px) brightness(0.4)' // Darken the background for text contrast
+        }}
+      />
+      <div className="absolute inset-0 bg-black/40" /> {/* Overlay for extra readability */}
+
+      <div className="relative z-10 flex flex-col md:flex-row items-center justify-center h-full p-6 md:p-12 gap-8">
         
-        <div className="flex-grow text-center md:text-right">
-          <div className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-wider text-primary uppercase bg-primary/10 rounded-full border border-primary/20">
-            Featured App
+        {/* Animated Text Content */}
+        <div key={`text-${currentApp.id}`} className="flex-grow text-center md:text-right animate-fade-in-up">
+          <div className="inline-block px-3 py-1 mb-4 text-xs font-bold tracking-wider text-green-300 uppercase bg-green-900/50 rounded-full border border-green-500/30 backdrop-blur-sm">
+            تطبيق مميز
           </div>
-          <h1 dir="rtl" className="text-3xl md:text-5xl font-bold text-white mb-2 md:mb-4 font-sans">
-            {featuredApp.title}
+          <h1 dir="rtl" className="text-3xl md:text-5xl font-bold text-white mb-2 md:mb-4 drop-shadow-md font-sans">
+            {currentApp.title}
           </h1>
-          <p dir="rtl" className="text-gray-300 text-base md:text-lg mb-6 max-w-2xl ml-auto font-sans">
-            {featuredApp.description}
+          <p dir="rtl" className="text-gray-200 text-base md:text-lg mb-6 max-w-2xl ml-auto font-sans line-clamp-2 drop-shadow-sm">
+            {description}
           </p>
           
           <div className="flex flex-wrap items-center justify-center md:justify-end gap-4">
-             <div className="flex items-center text-white px-4 py-2 bg-white/5 rounded-full backdrop-blur-sm border border-white/10">
-              <span className="font-bold mr-2 text-lg">{featuredApp.rating}</span>
+             <div className="flex items-center text-white px-4 py-2 bg-white/10 rounded-full backdrop-blur-md border border-white/20">
+              <span className="font-bold mr-2 text-lg">{rating}</span>
               <div className="flex">
                 {[...Array(5)].map((_, i) => (
                   <Star 
                     key={i} 
                     size={16} 
-                    className={i < Math.floor(featuredApp.rating) ? "text-yellow-400 fill-current" : "text-gray-500"} 
+                    className={i < Math.floor(rating) ? "text-yellow-400 fill-current" : "text-gray-400"} 
                   />
                 ))}
               </div>
             </div>
              <a 
-              href={featuredApp.playStoreUrl}
+              href={currentApp.playStoreUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-3 bg-primary hover:bg-primary-dark text-white font-semibold rounded-full transition-all duration-300 flex items-center shadow-lg shadow-primary/25 transform hover:-translate-y-1"
+              className="px-8 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-full transition-all duration-300 flex items-center shadow-lg hover:shadow-green-500/30 transform hover:-translate-y-1"
             >
-              Get it on Google Play
+              حمله من جوجل بلاي
             </a>
           </div>
         </div>
+
+        {/* Icon */}
+        <div className="flex-shrink-0 relative">
+          <img 
+            key={`img-${currentApp.id}`}
+            src={iconUrl || ''} 
+            alt={currentApp.title}
+            className={`w-32 h-32 md:w-48 md:h-48 rounded-3xl shadow-2xl object-cover ring-4 ring-white/20 transition-opacity duration-500 ${iconUrl ? 'opacity-100' : 'opacity-0'}`}
+          />
+        </div>
+      </div>
+
+      {/* Dots Indicator */}
+      <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-20">
+        {featuredApps.map((_, idx) => (
+          <button 
+            key={idx}
+            onClick={() => setCurrentIndex(idx)}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === currentIndex ? 'bg-white w-6' : 'bg-white/40 hover:bg-white/70'}`}
+          />
+        ))}
       </div>
     </div>
   );

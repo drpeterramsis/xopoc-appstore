@@ -11,11 +11,13 @@
         theme: {
           extend: {
             colors: {
-              primary: '#0F9D58', // Google Play Green-ish
+              primary: '#0F9D58', // Google Play Green
               'primary-dark': '#0B864A',
-              surface: '#202124',
-              'surface-hover': '#303134',
-              background: '#121212',
+              surface: '#ffffff', // Light mode surface
+              'surface-hover': '#f1f5f9',
+              background: '#f8fafc', // Light mode background
+              text: '#1e293b',
+              'text-muted': '#64748b'
             },
             fontFamily: {
               sans: ['Cairo', 'Inter', 'sans-serif'],
@@ -26,8 +28,8 @@
     </script>
     <style>
       body {
-        background-color: #121212;
-        color: #e8eaed;
+        background-color: #f8fafc;
+        color: #1e293b;
         font-family: 'Cairo', sans-serif;
       }
       /* Custom Scrollbar */
@@ -35,18 +37,17 @@
         width: 8px;
       }
       ::-webkit-scrollbar-track {
-        background: #202124;
+        background: #f1f1f1;
       }
       ::-webkit-scrollbar-thumb {
-        background: #5f6368;
+        background: #c1c1c1;
         border-radius: 4px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #9aa0a6;
+        background: #a8a8a8;
       }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script type="importmap">
 {
   "imports": {

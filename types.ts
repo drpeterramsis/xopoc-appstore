@@ -16,9 +16,11 @@ export interface AppData {
 }
 
 export enum AppCategory {
-  ALL = 'All',
-  XOPOC = 'Xopoc Apps',
-  SPIRIT_BREAD = 'Sp Bread Apps'
+  ALL = 'الكل',
+  BIBLE = 'الكتاب المقدس',
+  HYMNS = 'ألحان وتسبحة',
+  RADIO = 'راديو',
+  SERVICES = 'خدمات'
 }
 
 export interface SearchState {

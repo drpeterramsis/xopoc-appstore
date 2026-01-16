@@ -2,22 +2,19 @@
 // Usage: GET /api/app?id=com.package.name
 
 export default async function handler(request, response) {
-  // 1. Handle CORS (Critical for Google Sites embedding)
   response.setHeader('Access-Control-Allow-Credentials', true);
-  response.setHeader('Access-Control-Allow-Origin', '*'); // In production, you might restrict this to your Google Sites domain
+  response.setHeader('Access-Control-Allow-Origin', '*'); 
   response.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
   response.setHeader(
     'Access-Control-Allow-Headers',
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
   );
 
-  // Handle Preflight OPTIONS request
   if (request.method === 'OPTIONS') {
     return response.status(200).end();
   }
 
   try {
-    // Robust URL parsing that handles missing host header
     const host = request.headers.host || 'localhost';
     const protocol = request.headers['x-forwarded-proto'] || 'http';
     const { searchParams } = new URL(request.url, `${protocol}://${host}`);
@@ -27,25 +24,23 @@ export default async function handler(request, response) {
       return response.status(400).json({ error: 'App ID is required' });
     }
 
-    const playStoreUrl = `https://play.google.com/store/apps/details?id=${appId}&hl=ar`; // Scrape Arabic version
+    const playStoreUrl = `https://play.google.com/store/apps/details?id=${appId}&hl=ar`; 
     
-    // Updated User-Agent to look like a modern browser to reduce 403 blocks
     const res = await fetch(playStoreUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept-Language': 'ar,en-US;q=0.9,en;q=0.8'
       }
     });
 
-    // Handle non-200 responses from Google (e.g., 404 if app doesn't exist, or 403 if blocked)
     if (!res.ok) {
       console.warn(`Play Store returned status: ${res.status}`);
-      // Return partial data so the frontend doesn't break
       return response.status(200).json({
         id: appId,
         iconUrl: "", 
         rating: 0,
         downloads: "",
-        description: "App details unavailable.",
+        description: "",
         screenshots: [],
         playStoreUrl: playStoreUrl
       });
@@ -53,36 +48,46 @@ export default async function handler(request, response) {
 
     const html = await res.text();
 
-    // --- Robust Regex Scrapers ---
+    // --- Robust Regex Scrapers (Updated) ---
     
-    // 1. Icon
+    // 1. Icon: Look for standard image prop or specific class names often used by GP
     let iconUrl = '';
-    const iconMatch = html.match(/<img[^>]+src="([^"]+)"[^>]+alt="Icon image"/i) || 
-                      html.match(/<img[^>]+src="([^"]+)"[^>]+itemprop="image"/i) ||
-                      html.match(/<img[^>]+src="([^"]+)"[^>]+class="T75aBb[^"]*"/); // Common class for icons
+    const iconRegex = /<img[^>]+src="([^"]+)"[^>]+(alt="Icon image"|class="T75aBb[^"]*"|itemprop="image")/i;
+    const iconMatch = html.match(iconRegex);
     if (iconMatch) iconUrl = iconMatch[1];
     
     // 2. Rating
     let rating = 0;
     const ratingMatch = html.match(/aria-label="Rated ([0-9.]+)/i) || 
-                        html.match(/<div[^>]+itemprop="starRating"[^>]*>.*?<div[^>]+>([0-9.]+)/s);
+                        html.match(/"starRating":\s*([0-9.]+)/) ||
+                        html.match(/<div[^>]+itemprop="starRating"[^>]*>.*?([0-9.]+).*?<\/div>/s);
     if (ratingMatch) rating = parseFloat(ratingMatch[1]);
 
-    // 3. Downloads
+    // 3. Downloads (Critical Fix)
+    // Google Play format: "1M+" or "500K+" usually inside a specific div structure
     let downloads = '';
-    // Look for the specific structure often found in stats
-    const downloadMatch = html.match(/>([0-9,]+[K|M]\+)\s*downloads/i) ||
-                          html.match(/<div>([0-9,]+[K|M]\+)<\/div>/);
-    if (downloadMatch) downloads = downloadMatch[1];
+    // Pattern 1: JSON data in script
+    // Pattern 2: Visible text
+    const downloadMatch = html.match(/>\s*([0-9,.]+[K|M]\+)\s*downloads/i) ||
+                          html.match(/<div>([0-9,.]+[K|M]\+)<\/div>/) ||
+                          html.match(/"numDownloads":"([^"]+)"/); // Sometimes in JSON blobs
+
+    if (downloadMatch) {
+       downloads = downloadMatch[1].replace('downloads', '').trim();
+    } else {
+        // Fallback: Look for the text "Operations" or "Installations" in Arabic context if scraped in AR
+        const arDownloadMatch = html.match(/>([0-9,.]+\+)\s*عملية تنزيل/);
+        if (arDownloadMatch) downloads = arDownloadMatch[1];
+    }
 
     // 4. Description
     let description = '';
-    const descMatch = html.match(/itemprop="description"[^>]*><div[^>]*>(.*?)<\/div><\/div>/s) ||
-                      html.match(/data-g-id="description"[^>]*>(.*?)<\/div>/s);
+    const descMatch = html.match(/data-g-id="description"[^>]*>(.*?)<\/div>/s) ||
+                      html.match(/itemprop="description"[^>]*><div[^>]*>(.*?)<\/div><\/div>/s);
     if (descMatch) {
         description = descMatch[1]
             .replace(/<br>/g, '\n')
-            .replace(/<[^>]+>/g, '') // Strip HTML tags
+            .replace(/<[^>]+>/g, '') 
             .replace(/&quot;/g, '"')
             .replace(/&amp;/g, '&');
     }
@@ -92,18 +97,16 @@ export default async function handler(request, response) {
     const screenshotRegex = /<img[^>]+src="([^"]+)"[^>]+alt="Screenshot Image"/g;
     let match;
     while ((match = screenshotRegex.exec(html)) !== null) {
-        // Prevent duplicates and small thumbnails
         if (!screenshots.includes(match[1]) && !match[1].includes('cp-anchor')) {
             screenshots.push(match[1]);
         }
     }
 
-    // Return Data
     const data = {
       id: appId,
       iconUrl: iconUrl || "", 
       rating: rating || 0,
-      downloads: downloads,
+      downloads: downloads, // May be empty if blocked, but regex is better now
       description: description.substring(0, 500) + (description.length > 500 ? '...' : ''),
       fullDescription: description,
       screenshots: screenshots.length > 0 ? screenshots : [],
@@ -114,10 +117,9 @@ export default async function handler(request, response) {
 
   } catch (error) {
     console.error('Scraping Error:', error);
-    // Return a 200 with minimal data so the UI doesn't crash on network/parsing errors
     return response.status(200).json({ 
         id: request.query?.id || 'unknown',
-        description: "Could not fetch details.",
+        description: "",
         iconUrl: "",
         screenshots: []
     });

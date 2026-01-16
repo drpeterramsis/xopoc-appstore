@@ -37,10 +37,9 @@ const AppDetails: React.FC = () => {
         } catch (err) {
             console.warn("Could not load full app details, using fallback.", err);
             setUsingFallback(true);
-            // Use basic info as details if fetch fails
             setDetails({
                 ...basicAppInfo,
-                description: "Full description unavailable from Play Store. Please check the Play Store link for more details.",
+                description: "تعذر تحميل التفاصيل الكاملة من المتجر. يرجى الضغط على زر التحميل للمزيد من المعلومات.",
                 screenshots: []
             });
         } finally {
@@ -53,26 +52,26 @@ const AppDetails: React.FC = () => {
 
   if (!basicAppInfo) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-white">
+      <div className="min-h-screen flex items-center justify-center text-text bg-background">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">App not found</h2>
-          <button onClick={() => navigate('/')} className="text-primary hover:underline">Go Home</button>
+          <h2 className="text-2xl font-bold mb-4">البرنامج غير موجود</h2>
+          <button onClick={() => navigate('/')} className="text-primary hover:underline">العودة للرئيسية</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background pt-20 pb-12 animate-fade-in">
+    <div className="min-h-screen bg-background pt-20 pb-20 animate-fade-in text-text font-sans">
       {/* Header / Nav */}
-      <div className="fixed top-0 left-0 right-0 z-40 bg-surface/90 backdrop-blur-md border-b border-white/5 h-16 flex items-center px-4">
+      <div className="fixed top-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200 h-16 flex items-center px-4 shadow-sm">
         <button 
           onClick={() => navigate('/')}
-          className="p-2 -mr-2 text-white hover:bg-white/10 rounded-full transition-colors"
+          className="p-2 -mr-2 text-text hover:bg-gray-100 rounded-full transition-colors transform rotate-180"
         >
           <ArrowRight size={24} />
         </button>
-        <span className="mr-4 text-lg font-semibold text-white truncate max-w-[200px]">
+        <span className="mr-4 text-lg font-bold text-text truncate max-w-[200px]">
           {basicAppInfo.title}
         </span>
       </div>
@@ -82,7 +81,7 @@ const AppDetails: React.FC = () => {
         {loading && (
             <div className="flex flex-col items-center justify-center py-20">
                 <Loader2 size={48} className="animate-spin text-primary mb-4" />
-                <p className="text-gray-400">Fetching latest data from Play Store...</p>
+                <p className="text-text-muted">جاري تحميل البيانات من المتجر...</p>
             </div>
         )}
 
@@ -91,12 +90,12 @@ const AppDetails: React.FC = () => {
             <>
                 {/* Fallback Warning */}
                 {usingFallback && (
-                    <div className="bg-yellow-900/20 border border-yellow-500/20 rounded-xl p-4 mb-6 flex items-center justify-end text-right">
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-center justify-end text-right">
                         <div>
-                            <p className="text-yellow-200 text-sm">could not connect to Play Store API</p>
-                            <p className="text-yellow-500 text-xs">Some details might be missing</p>
+                            <p className="text-amber-800 text-sm font-bold">تعذر الاتصال بمتجر جوجل</p>
+                            <p className="text-amber-600 text-xs">بعض التفاصيل قد تكون غير متاحة</p>
                         </div>
-                        <AlertCircle size={24} className="text-yellow-500 ml-3" />
+                        <AlertCircle size={24} className="text-amber-500 ml-3" />
                     </div>
                 )}
 
@@ -107,32 +106,32 @@ const AppDetails: React.FC = () => {
                          <img 
                          src={details.iconUrl} 
                          alt={basicAppInfo.title} 
-                         className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl shadow-2xl object-cover"
+                         className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl shadow-xl object-cover ring-4 ring-white"
                      />
                     ) : (
-                        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl shadow-2xl bg-white/10 flex items-center justify-center">
-                            <Package size={48} className="text-gray-500" />
+                        <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl shadow-xl bg-primary/10 flex items-center justify-center">
+                            <span className="text-4xl font-bold text-primary">{basicAppInfo.title.charAt(0)}</span>
                         </div>
                     )}
                  </div>
                 
                 <div className="flex-grow text-center md:text-right">
-                    <h1 dir="rtl" className="text-3xl font-bold text-white mb-1 font-sans">{basicAppInfo.title}</h1>
+                    <h1 dir="rtl" className="text-3xl font-bold text-text mb-1 font-sans">{basicAppInfo.title}</h1>
                     <p className="text-primary font-medium mb-4">{basicAppInfo.developer}</p>
                     
                     {/* Stats */}
                     {details.rating ? (
-                        <div className="flex items-center justify-center md:justify-end gap-6 text-gray-300 text-sm mb-6 border-b border-white/10 pb-6 md:border-none md:pb-0">
+                        <div className="flex items-center justify-center md:justify-end gap-6 text-text-muted text-sm mb-6 border-b border-gray-200 pb-6 md:border-none md:pb-0">
                         <div className="flex flex-col items-center">
-                            <span className="font-bold text-white flex items-center">
-                            {details.rating} <Star size={12} fill="currentColor" className="ml-1" />
+                            <span className="font-bold text-text flex items-center">
+                            {details.rating} <Star size={12} fill="currentColor" className="ml-1 text-yellow-500" />
                             </span>
-                            <span className="text-xs text-gray-500">Rating</span>
+                            <span className="text-xs text-text-muted">التقييم</span>
                         </div>
-                        <div className="w-px h-8 bg-white/10"></div>
+                        <div className="w-px h-8 bg-gray-300"></div>
                         <div className="flex flex-col items-center">
-                            <span className="font-bold text-white">{details.downloads || '-'}</span>
-                            <span className="text-xs text-gray-500">Downloads</span>
+                            <span className="font-bold text-text" dir="ltr">{details.downloads || '-'}</span>
+                            <span className="text-xs text-text-muted">التحميلات</span>
                         </div>
                         </div>
                     ) : (
@@ -143,9 +142,9 @@ const AppDetails: React.FC = () => {
                     href={basicAppInfo.playStoreUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full md:w-auto inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-8 rounded-full transition-all duration-300 shadow-lg shadow-primary/20"
+                    className="w-full md:w-auto inline-flex items-center justify-center bg-primary hover:bg-primary-dark text-white font-bold py-3 px-8 rounded-full transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/40 transform hover:-translate-y-1"
                     >
-                    Install from Google Play
+                    تحميل من جوجل بلاي
                     </a>
                 </div>
                 </div>
@@ -153,14 +152,14 @@ const AppDetails: React.FC = () => {
                 {/* Screenshots */}
                 {details.screenshots && details.screenshots.length > 0 && (
                     <div className="mt-8 md:mt-12">
-                    <h2 className="text-xl font-bold text-white mb-4 text-right">Screenshots</h2>
-                    <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide">
+                    <h2 className="text-xl font-bold text-text mb-4 text-right">لقطات الشاشة</h2>
+                    <div className="flex overflow-x-auto gap-4 pb-4 snap-x snap-mandatory scrollbar-hide px-1">
                         {details.screenshots.map((shot, index) => (
                         <img 
                             key={index}
                             src={shot} 
                             alt={`Screenshot ${index + 1}`}
-                            className="h-64 md:h-80 rounded-2xl shadow-lg snap-center object-cover border border-white/5"
+                            className="h-64 md:h-80 rounded-2xl shadow-md snap-center object-cover border border-gray-100"
                         />
                         ))}
                     </div>
@@ -169,20 +168,20 @@ const AppDetails: React.FC = () => {
 
                 {/* About */}
                 <div className="mt-8 md:mt-12">
-                <h2 className="text-xl font-bold text-white mb-4 text-right">About this app</h2>
-                <p dir="rtl" className="text-gray-300 leading-relaxed whitespace-pre-wrap text-right font-sans">
+                <h2 className="text-xl font-bold text-text mb-4 text-right">عن هذا البرانامج</h2>
+                <p dir="rtl" className="text-text-muted leading-relaxed whitespace-pre-wrap text-right font-sans bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                     {details.fullDescription || details.description}
                 </p>
                 </div>
 
                 {/* Data Safety Stub */}
-                <div className="mt-8 border-t border-white/10 pt-8 mb-12">
+                <div className="mt-8 border-t border-gray-200 pt-8 mb-12">
                     <div className="flex items-center justify-end mb-4 text-right">
-                        <h2 className="text-xl font-bold text-white mr-2">Data Safety</h2>
-                        <ShieldCheck size={20} className="text-gray-400" />
+                        <h2 className="text-xl font-bold text-text mr-2">أمان البيانات</h2>
+                        <ShieldCheck size={20} className="text-primary" />
                     </div>
-                    <p className="text-gray-400 text-sm text-right">
-                        Data privacy and security practices may vary based on your use, region, and age. The developer provided this information and may update it over time.
+                    <p className="text-text-muted text-sm text-right">
+                        قد تختلف ممارسات خصوصية البيانات والأمان بناءً على استخدامك ومنطقتك وعمرك. قدم المطور هذه المعلومات وقد يقوم بتحديثها بمرور الوقت.
                     </p>
                 </div>
             </>

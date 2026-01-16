@@ -16,8 +16,11 @@ const Home: React.FC = () => {
   // Derive categories from Enum
   const categories = Object.values(AppCategory);
 
-  // Featured app for Hero (first app marked as featured)
-  const featuredApp = useMemo(() => APPS_DATA.find(app => app.featured) || APPS_DATA[0], []);
+  // Get all apps marked as featured for the Hero Slider
+  const featuredApps = useMemo(() => {
+    const featured = APPS_DATA.filter(app => app.featured);
+    return featured.length > 0 ? featured : [APPS_DATA[0]];
+  }, []);
 
   // Standard filter logic
   const handleCategorySelect = (category: string) => {
@@ -50,14 +53,14 @@ const Home: React.FC = () => {
     const results = APPS_DATA.filter(app => 
       app.title.toLowerCase().includes(lowerQuery) || 
       app.developer.toLowerCase().includes(lowerQuery) ||
-      app.description.toLowerCase().includes(lowerQuery) ||
+      app.description?.toLowerCase().includes(lowerQuery) ||
       app.category.toLowerCase().includes(lowerQuery)
     );
     setFilteredApps(results);
   };
 
   return (
-    <div className="min-h-screen bg-background text-gray-100 font-sans selection:bg-primary/30 selection:text-white pb-20">
+    <div className="min-h-screen bg-background text-text font-sans selection:bg-primary/30 pb-20">
       
       <Navbar 
         onSearch={handleSearch} 
@@ -69,34 +72,33 @@ const Home: React.FC = () => {
       <main className="pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Show Hero only if not searching and on "All" category */}
-        {activeCategory === AppCategory.ALL && !isSearching && filteredApps.length === APPS_DATA.length && (
-          <Hero featuredApp={featuredApp} />
+        {activeCategory === AppCategory.ALL && !isSearching && (
+          <Hero featuredApps={featuredApps} />
         )}
 
         {/* Category Title */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-white">
-            {isSearching ? 'Search Results' : activeCategory === AppCategory.ALL ? 'Popular Apps' : activeCategory}
+        <div className="flex items-center justify-between mb-6 flex-row-reverse">
+          <h2 className="text-2xl font-bold text-text">
+            {isSearching ? 'نتائج البحث' : activeCategory === AppCategory.ALL ? 'الأكثر رواجاً' : activeCategory}
           </h2>
-          <span className="text-gray-500 text-sm">
-            {filteredApps.length} {filteredApps.length === 1 ? 'result' : 'results'}
+          <span className="text-text-muted text-sm font-medium">
+            {filteredApps.length} {filteredApps.length === 1 ? 'برنامج' : 'برامج'}
           </span>
         </div>
 
         {/* Empty State */}
         {filteredApps.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-            <Frown size={64} className="mb-4 opacity-50" />
-            <h3 className="text-xl font-semibold mb-2">No apps found</h3>
-            <p>Try adjusting your search.</p>
+          <div className="flex flex-col items-center justify-center py-20 text-text-muted">
+            <Frown size={64} className="mb-4 opacity-50 text-gray-400" />
+            <h3 className="text-xl font-bold mb-2">لا توجد نتائج</h3>
+            <p>حاول استخدام كلمات بحث مختلفة</p>
             <button 
               onClick={() => {
                 handleCategorySelect(AppCategory.ALL);
-                // You might want to trigger a search clear here in a real app
               }}
-              className="mt-6 px-6 py-2 bg-white/5 hover:bg-white/10 rounded-full text-white transition-colors"
+              className="mt-6 px-6 py-2 bg-gray-200 hover:bg-gray-300 rounded-full text-text transition-colors font-bold"
             >
-              View All Apps
+              عرض كل البرامج
             </button>
           </div>
         )}
@@ -116,14 +118,12 @@ const Home: React.FC = () => {
 
       </main>
       
-      {/* Footer */}
-      <footer className="mt-20 border-t border-white/5 py-10 text-center">
-        <p className="text-gray-500 text-sm">
-          © {new Date().getFullYear()} Xopoc Store. All rights reserved.
-        </p>
-        <p className="text-gray-600 text-xs mt-2">
-          Google Play and the Google Play logo are trademarks of Google LLC.
-        </p>
+      {/* Fixed Footer */}
+      <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 text-center z-50 shadow-lg-up">
+        <div className="flex justify-between items-center max-w-7xl mx-auto px-4 text-xs font-bold text-gray-500">
+           <span>v2.0.0</span>
+           <span>© {new Date().getFullYear()} برامج خورس - Xopoc Store</span>
+        </div>
       </footer>
     </div>
   );
