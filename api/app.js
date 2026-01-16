@@ -50,7 +50,7 @@ export default async function handler(request, response) {
 
     const html = await res.text();
 
-    // --- Robust Regex Scrapers (Updated v2.2.1) ---
+    // --- Robust Regex Scrapers (Updated v2.2.4) ---
     
     // 1. Icon
     let iconUrl = '';
@@ -58,21 +58,11 @@ export default async function handler(request, response) {
     const iconMatch = html.match(iconRegex);
     if (iconMatch) iconUrl = iconMatch[1];
     
-    // 2. Rating
-    // Strategies: 
-    // A) Look for aria-label on the star rating div (e.g. "Rated 4.5 stars out of five stars")
-    // B) Look for "starRating" structured data
-    // C) Look for text content inside specific rating classes
+    // 2. Rating (Highest Reviews)
     let rating = 0;
-    
-    // Strategy A (Arabic/English agnostic regex for number followed by star/rating keyword)
-    const ratingAria = html.match(/aria-label="[^"]*([0-5]\.[0-9])[^"]*(\u0646\u062c\u0648\u0645|stars)/i);
-    
-    // Strategy B (JSON-LD)
     const ratingJson = html.match(/"starRating":\s*{\s*"?@type"?:\s*"Rating",\s*"?ratingValue"?:\s*"([0-9.]+)"/);
-    
-    // Strategy C (Fallback text)
-    const ratingText = html.match(/>([0-9]\.[0-9])<.*star/i);
+    const ratingAria = html.match(/aria-label="[^"]*([0-5]\.[0-9])[^"]*(\u0646\u062c\u0648\u0645|stars)/i);
+    const ratingText = html.match(/>([0-9]\.[0-9])<.*star/i); // Common fallback
 
     if (ratingJson) {
         rating = parseFloat(ratingJson[1]);
@@ -82,19 +72,17 @@ export default async function handler(request, response) {
         rating = parseFloat(ratingText[1]);
     }
 
-    // 3. Downloads
-    // Look for "10K+" or "1,000+" followed by downloads/عملية تنزيل
+    // 3. Downloads (Total Installs)
+    // Matches: 10K+ downloads / 10K+ عملية تنزيل
     let downloads = '';
-    
-    // Try to find the exact text in a div
-    const downloadRegex = />\s*([0-9,.]+[K|M|B]?\+)\s*(downloads|عملية تنزيل)/i;
+    const downloadRegex = />\s*([0-9,.]+[K|M|B|k|m|b]?\+)\s*(downloads|عملية تنزيل)/i;
     const downloadMatch = html.match(downloadRegex);
     
     if (downloadMatch) {
        downloads = downloadMatch[1].trim();
     } else {
-        // Fallback: look for script data ["10K+"]
-        const scriptDownload = html.match(/\["([0-9,.]+[K|M]?\+)"\]/);
+        // Fallback: look for script data often found in Play Store source
+        const scriptDownload = html.match(/\["([0-9,.]+[K|M|B]?\+)"\]/);
         if (scriptDownload) downloads = scriptDownload[1];
     }
 
@@ -107,7 +95,8 @@ export default async function handler(request, response) {
             .replace(/<br>/g, '\n')
             .replace(/<[^>]+>/g, '') 
             .replace(/&quot;/g, '"')
-            .replace(/&amp;/g, '&');
+            .replace(/&amp;/g, '&')
+            .trim();
     }
 
     // 5. Screenshots
@@ -120,25 +109,23 @@ export default async function handler(request, response) {
         }
     }
 
-    // 6. Reviews Count
-    // Arabic: 1.25 ألف مراجعة or 500 مراجعة
-    // English: 1.25K reviews
+    // 6. Reviews Count (Total Reviews)
+    // Arabic: 1.25 ألف مراجعة
     let reviewsCount = '';
-    const reviewsMatch = html.match(/>([0-9,.]+\s*[K|M|ألف|مليون]?)\s*(reviews|مراجعة)</i);
+    const reviewsMatch = html.match(/>([0-9,.]+\s*[K|M|B|ألف|مليون]?)\s*(reviews|مراجعة)</i);
     if (reviewsMatch) reviewsCount = reviewsMatch[1];
 
-    // 7. Last Updated
-    // Find text "Updated on" or "تاريخ التحديث" then find the next div content
+    // 7. Last Updated (Update Date)
     let updatedOn = '';
+    // Looks for "Updated on" header then grabs the next text node
     const updateRegex = />(تاريخ التحديث|Updated on)<\/div>.*?<div[^>]*>(.*?)<\/div>/s;
     const updateMatch = html.match(updateRegex);
     if (updateMatch) {
         updatedOn = updateMatch[2].replace(/<[^>]+>/g, '').trim();
     }
 
-    // 8. Version
+    // 8. Version (Latest Version Number)
     let version = '';
-    // Find "Current Version" or "الإصدار الحالي"
     const versionRegex = />(الإصدار الحالي|Current Version)<\/div>.*?<div[^>]*>(.*?)<\/div>/s;
     const versionMatch = html.match(versionRegex);
     if (versionMatch) {
@@ -167,7 +154,8 @@ export default async function handler(request, response) {
         id: request.query?.id || 'unknown',
         description: "",
         iconUrl: "",
-        screenshots: []
+        screenshots: [],
+        rating: 0
     });
   }
 }

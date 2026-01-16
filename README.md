@@ -5,6 +5,15 @@ The official app store for Xopoc Coptic applications.
 
 ## Version History
 
+### v2.2.4
+- **Scraper Enhancements**: 
+    - Added robust fetching for **Total Installs**, **Update Date**, **Latest Version**, **Highest Rating**, and **Total Reviews**.
+    - Improved regex patterns to handle various Google Play Store HTML structures (Arabic/English).
+- **Hero UX**:
+    - **One-Line Description**: Strictly enforces a single-line summary for the app description in the Hero section.
+    - **Smart Cleaning**: Removes the app title from the description to prevent redundancy.
+- **Webapp Conversion**: Added `manifest.json` and theme colors to support PWA installation.
+
 ### v2.2.3
 - **Featured Apps**: Now displays featured apps in a random order every time the site is opened to give exposure to all apps.
 - **Hero UX**: 

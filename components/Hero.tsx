@@ -56,20 +56,24 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
   // Logic to clean description: 
   // 1. Remove title if present at start.
   // 2. Remove common prefixes.
-  // 3. Truncate for summary.
-  let description = appDetails.description || currentApp.title;
+  // 3. One line only (Short Description).
   
-  // Remove title case-insensitively
-  const titleRegex = new RegExp(`^${currentApp.title}\\s*[:|-]?\\s*`, 'i');
-  description = description.replace(titleRegex, '').trim();
+  // Start with full description or title as fallback
+  let rawDesc = appDetails.description || currentApp.title;
   
-  // Remove leading non-alphanumeric chars
-  description = description.replace(/^[\s-:]+/, '');
+  // Remove the App Title from the description (case-insensitive)
+  const titleRegex = new RegExp(`${currentApp.title}\\s*[:|-]?\\s*`, 'gi');
+  let cleanDesc = rawDesc.replace(titleRegex, '').trim();
 
-  // Limit length for Hero summary
-  if (description.length > 120) {
-      description = description.substring(0, 120) + '...';
-  }
+  // Remove leading non-alphanumeric chars that might remain (like -, :)
+  cleanDesc = cleanDesc.replace(/^[\s-:]+/, '');
+
+  // Extract only the first sentence or first line
+  // Split by newline or period followed by space
+  const firstLine = cleanDesc.split(/(\r\n|\n|\r|\.\s)/)[0];
+  
+  // Truncate to max 90 characters to keep it "one line" visually
+  let description = firstLine.length > 90 ? firstLine.substring(0, 90) + '...' : firstLine;
 
   const handleHeroClick = () => {
     navigate(`/app/${currentApp.id}`);
@@ -92,9 +96,9 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
 
       {/* 
-         LAYOUT UPDATE:
+         LAYOUT:
          Mobile: Flex Column (Icon first, then Text)
-         Desktop: Flex Row Reverse (Since RTL, this puts Text on Right, Icon on Left)
+         Desktop: Flex Row Reverse (Text on Right, Icon on Left)
       */}
       <div className="relative z-10 flex flex-col md:flex-row-reverse items-center justify-center h-full p-6 md:p-12 gap-6 md:gap-8">
         
@@ -119,11 +123,12 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
             {currentApp.title}
           </h1>
           
-          <p dir="rtl" className="text-gray-200 text-sm md:text-lg mb-4 max-w-xl font-sans leading-relaxed drop-shadow-sm">
+          {/* Summary / Short Description */}
+          <p dir="rtl" className="text-gray-200 text-sm md:text-lg mb-4 max-w-xl font-sans leading-relaxed drop-shadow-sm whitespace-nowrap overflow-hidden text-ellipsis w-full">
             {description}
           </p>
           
-          {/* Stats Row: Ratings & Downloads */}
+          {/* Stats Row: Ratings, Downloads, Reviews */}
           <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 mb-5" onClick={(e) => e.stopPropagation()}>
              {/* Rating Badge */}
              <div className="flex items-center text-white px-3 py-1.5 bg-white/10 rounded-xl backdrop-blur-md border border-white/20">
@@ -147,7 +152,7 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
                 </div>
             )}
             
-            {/* Reviews Count (Optional, good for credibility) */}
+            {/* Reviews Count */}
              {reviewsCount && (
                 <div className="hidden sm:flex items-center text-white px-3 py-1.5 bg-purple-600/20 rounded-xl backdrop-blur-md border border-purple-400/30">
                      <span className="font-bold mr-1 text-sm">{reviewsCount}</span>
