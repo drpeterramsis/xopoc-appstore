@@ -6,11 +6,12 @@ import { AppCategory, AppData } from './types';
 export const APPS_DATA: AppData[] = [
   // --- Xopoc Apps ---
   {
-    id: 'io.kodular.drpeterramsis2007.xopocpatcher',
+    id: 'com.xopoc.drpeterramsis.xopocpatcher',
     title: 'إشليل الاجبية المسموعة الشاملة',
     developer: 'Xopoc',
     category: AppCategory.HYMNS,
-    playStoreUrl: 'https://play.google.com/store/apps/details?id=io.kodular.drpeterramsis2007.xopocpatcher'
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.xopoc.drpeterramsis.xopocpatcher',
+    featured: true
   },
   {
     id: 'com.xopoc.drpeterramsis.copticalhan.arabictasbeha_p',
@@ -40,7 +41,8 @@ export const APPS_DATA: AppData[] = [
     title: 'الاجبية المسموعة بدون انترنت',
     developer: 'Xopoc',
     category: AppCategory.HYMNS,
-    playStoreUrl: 'https://play.google.com/store/apps/details?id=io.kodular.drpeterramsis2007.agpeya2'
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=io.kodular.drpeterramsis2007.agpeya2',
+    featured: true
   },
   {
     id: 'io.kodular.drpeterramsis2007.Turin_Shroud_App',
@@ -91,15 +93,15 @@ export const APPS_DATA: AppData[] = [
     title: 'سفر المزامير مسموع بدون انترنت',
     developer: 'Xopoc',
     category: AppCategory.BIBLE,
-    playStoreUrl: 'https://play.google.com/store/apps/details?id=io.kodular.drpeterramsis2007.NewmazamerAudio'
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=io.kodular.drpeterramsis2007.NewmazamerAudio',
+    featured: true
   },
   {
     id: 'appinventor.ai_drpeterramsis2007.Passion_alhan',
     title: 'سوتيريا',
     developer: 'Xopoc',
     category: AppCategory.HYMNS,
-    playStoreUrl: 'https://play.google.com/store/apps/details?id=appinventor.ai_drpeterramsis2007.Passion_alhan',
-    featured: true
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=appinventor.ai_drpeterramsis2007.Passion_alhan'
   },
   {
     id: 'io.kodular.drpeterramsis2007.Arshy_Angelos',
@@ -192,8 +194,7 @@ export const APPS_DATA: AppData[] = [
     title: 'العهد القديم الجزء الاول مسموع',
     developer: 'Sp Bread',
     category: AppCategory.BIBLE,
-    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.xopoc.drpeterramsis.spiritbread.oldbible_part1',
-    featured: true
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.xopoc.drpeterramsis.spiritbread.oldbible_part1'
   },
   {
     id: 'com.xopoc.drpeterramsis.spiritbread.oldbible_part3_d',

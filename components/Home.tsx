@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Hero from './Hero';
@@ -7,14 +7,24 @@ import { APPS_DATA } from '../constants';
 import { AppCategory, AppData } from '../types';
 import { Frown } from 'lucide-react';
 
+const CATEGORY_MAIN = 'الرئيسية';
+const CATEGORY_SPIRIT = 'غذاء الروح';
+
 const Home: React.FC = () => {
-  const [activeCategory, setActiveCategory] = useState<string>(AppCategory.ALL);
-  const [filteredApps, setFilteredApps] = useState<AppData[]>(APPS_DATA);
+  const [activeCategory, setActiveCategory] = useState<string>(CATEGORY_MAIN);
+  const [filteredApps, setFilteredApps] = useState<AppData[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
 
-  // Derive categories from Enum
-  const categories = Object.values(AppCategory);
+  // Custom Category List including the "Spirit Bread" filter
+  const categories = [
+    CATEGORY_MAIN, 
+    CATEGORY_SPIRIT,
+    AppCategory.BIBLE,
+    AppCategory.HYMNS,
+    AppCategory.RADIO,
+    AppCategory.SERVICES
+  ];
 
   // Get all apps marked as featured for the Hero Slider
   const featuredApps = useMemo(() => {
@@ -22,15 +32,35 @@ const Home: React.FC = () => {
     return featured.length > 0 ? featured : [APPS_DATA[0]];
   }, []);
 
-  // Standard filter logic
-  const handleCategorySelect = (category: string) => {
-    setActiveCategory(category);
-    if (category === AppCategory.ALL) {
-      setFilteredApps(APPS_DATA);
-    } else {
-      setFilteredApps(APPS_DATA.filter(app => app.category === category));
+  // Filter Logic
+  useEffect(() => {
+    if (isSearching) return;
+
+    let results = APPS_DATA;
+
+    // "Main" = All Xopoc apps, excluding Spirit Bread
+    if (activeCategory === CATEGORY_MAIN) {
+      results = APPS_DATA.filter(app => app.developer === 'Xopoc');
+    } 
+    // "Spirit Bread" = Only Spirit Bread apps
+    else if (activeCategory === CATEGORY_SPIRIT) {
+      results = APPS_DATA.filter(app => app.developer === 'Sp Bread');
     }
-    // Scroll to top
+    // Specific Categories (Bible, Hymns, etc)
+    // Filter Xopoc apps by category (Assume Xopoc is default context unless Spirit Bread selected)
+    // The requirement "Xopoc only without Spirit Bread" implies browsing categories should likely default to Xopoc
+    else {
+      results = APPS_DATA.filter(app => 
+        app.developer === 'Xopoc' && app.category === activeCategory
+      );
+    }
+
+    setFilteredApps(results);
+  }, [activeCategory, isSearching]);
+
+  const handleCategorySelect = (category: string) => {
+    setIsSearching(false);
+    setActiveCategory(category);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -38,17 +68,13 @@ const Home: React.FC = () => {
   const handleSearch = (query: string) => {
     if (!query.trim()) {
       setIsSearching(false);
-      // Re-apply category filter if search is cleared
-      if (activeCategory === AppCategory.ALL) {
-        setFilteredApps(APPS_DATA);
-      } else {
-        setFilteredApps(APPS_DATA.filter(app => app.category === activeCategory));
-      }
+      // Trigger re-filter based on activeCategory
+      setActiveCategory(activeCategory); 
       return;
     }
 
     setIsSearching(true);
-    // Basic Local Search
+    // Basic Local Search (Search everything, regardless of developer)
     const lowerQuery = query.toLowerCase();
     const results = APPS_DATA.filter(app => 
       app.title.toLowerCase().includes(lowerQuery) || 
@@ -71,15 +97,15 @@ const Home: React.FC = () => {
 
       <main className="pt-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Show Hero only if not searching and on "All" category */}
-        {activeCategory === AppCategory.ALL && !isSearching && (
+        {/* Show Hero only if not searching and on "Main" category */}
+        {activeCategory === CATEGORY_MAIN && !isSearching && (
           <Hero featuredApps={featuredApps} />
         )}
 
         {/* Category Title */}
         <div className="flex items-center justify-between mb-6 flex-row-reverse">
           <h2 className="text-2xl font-bold text-text">
-            {isSearching ? 'نتائج البحث' : activeCategory === AppCategory.ALL ? 'الأكثر رواجاً' : activeCategory}
+            {isSearching ? 'نتائج البحث' : activeCategory}
           </h2>
           <span className="text-text-muted text-sm font-medium">
             {filteredApps.length} {filteredApps.length === 1 ? 'برنامج' : 'برامج'}
@@ -91,14 +117,14 @@ const Home: React.FC = () => {
           <div className="flex flex-col items-center justify-center py-20 text-text-muted">
             <Frown size={64} className="mb-4 opacity-50 text-gray-400" />
             <h3 className="text-xl font-bold mb-2">لا توجد نتائج</h3>
-            <p>حاول استخدام كلمات بحث مختلفة</p>
+            <p>حاول استخدام كلمات بحث مختلفة أو تغيير التصنيف</p>
             <button 
               onClick={() => {
-                handleCategorySelect(AppCategory.ALL);
+                handleCategorySelect(CATEGORY_MAIN);
               }}
               className="mt-6 px-6 py-2 bg-gray-200 hover:bg-gray-300 rounded-full text-text transition-colors font-bold"
             >
-              عرض كل البرامج
+              العودة للرئيسية
             </button>
           </div>
         )}
@@ -121,7 +147,7 @@ const Home: React.FC = () => {
       {/* Fixed Footer */}
       <footer className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 text-center z-50 shadow-lg-up">
         <div className="flex justify-between items-center max-w-7xl mx-auto px-4 text-xs font-bold text-gray-500">
-           <span>v2.0.0</span>
+           <span>v2.1.0</span>
            <span>© {new Date().getFullYear()} برامج خورس - Xopoc Store</span>
         </div>
       </footer>

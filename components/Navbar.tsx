@@ -44,7 +44,8 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, onCategorySelect, categories,
             </div>
             <div className="flex flex-col items-start">
                  <span className="text-text font-bold text-lg tracking-tight font-sans">برامج خورس</span>
-                 <span className="text-primary text-xs font-bold -mt-1">غذاء الروح</span>
+                 <span className="text-primary text-[10px] font-bold -mt-1 hidden sm:block">منصة تطوير البرامج المسيحية المتخصصة للموبايل</span>
+                 <span className="text-primary text-xs font-bold -mt-1 sm:hidden">خورس</span>
             </div>
            
           </div>

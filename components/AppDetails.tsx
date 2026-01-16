@@ -64,14 +64,18 @@ const AppDetails: React.FC = () => {
   return (
     <div className="min-h-screen bg-background pt-20 pb-20 animate-fade-in text-text font-sans">
       {/* Header / Nav */}
-      <div className="fixed top-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200 h-16 flex items-center px-4 shadow-sm">
-        <button 
-          onClick={() => navigate('/')}
-          className="p-2 -mr-2 text-text hover:bg-gray-100 rounded-full transition-colors transform rotate-180"
-        >
-          <ArrowRight size={24} />
-        </button>
-        <span className="mr-4 text-lg font-bold text-text truncate max-w-[200px]">
+      <div className="fixed top-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200 h-16 flex items-center px-4 shadow-sm justify-between">
+        <div className="flex items-center gap-2">
+            <button 
+            onClick={() => navigate(-1)}
+            className="flex items-center text-text hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors group"
+            >
+            <ArrowRight size={20} className="transform rotate-180 ml-2 group-hover:-translate-x-1 transition-transform" />
+            <span className="font-bold">عودة</span>
+            </button>
+        </div>
+        
+        <span className="text-lg font-bold text-text truncate max-w-[200px] md:max-w-md text-right">
           {basicAppInfo.title}
         </span>
       </div>
