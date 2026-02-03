@@ -1,11 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, Download, MessageSquare } from 'lucide-react';
+import { Star, Download, MessageSquare, ExternalLink } from 'lucide-react';
 import { AppData } from '../types';
 
 interface HeroProps {
   featuredApps: AppData[];
+}
+
+// Helper to escape special characters for Regex
+function escapeRegExp(string: string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); 
 }
 
 const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
@@ -61,9 +66,23 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
   // Start with full description or title as fallback
   let rawDesc = appDetails.description || currentApp.title;
   
-  // Remove the App Title from the description (case-insensitive)
-  const titleRegex = new RegExp(`${currentApp.title}\\s*[:|-]?\\s*`, 'gi');
+  // Remove the App Title from the description (case-insensitive) using escaped regex
+  // Matches "Title" optionally followed by separator like : or - or |
+  const escapedTitle = escapeRegExp(currentApp.title);
+  const titleRegex = new RegExp(`^${escapedTitle}\\s*[:|-]?\\s*`, 'gi');
+  
+  // Also try matching without case sensitivity anywhere in the beginning
+  // Note: the previous code used `new RegExp(`${currentApp.title}\\s*[:|-]?\\s*`, 'gi')` which replaced *all* occurrences.
+  // Usually we only want to remove it if it starts the description (like "App Name: description...").
+  // But if the user says "don't rewrite the app name", they imply avoiding redundancy.
+  // I will make sure it catches the title at the start robustly.
   let cleanDesc = rawDesc.replace(titleRegex, '').trim();
+
+  // Also remove if the description starts with the title but the regex didn't catch case (e.g. slight variation).
+  // This is a safety check.
+  if (cleanDesc.toLowerCase().startsWith(currentApp.title.toLowerCase())) {
+     cleanDesc = cleanDesc.substring(currentApp.title.length).trim();
+  }
 
   // Remove leading non-alphanumeric chars that might remain (like -, :)
   cleanDesc = cleanDesc.replace(/^[\s-:]+/, '');
@@ -83,6 +102,7 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
     <div 
       className="relative w-full min-h-[450px] md:h-[350px] rounded-3xl overflow-hidden shadow-2xl mb-12 transition-all duration-500 ease-in-out group cursor-pointer"
       onClick={handleHeroClick}
+      dir="rtl"
     >
       
       {/* Dynamic Background Image (Dark Faded) */}
@@ -119,12 +139,12 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
             تطبيق مميز
           </div>
           
-          <h1 dir="rtl" className="text-2xl md:text-5xl font-bold text-white mb-2 md:mb-3 drop-shadow-md font-sans group-hover:text-blue-300 transition-colors">
+          <h1 dir="rtl" className="text-2xl md:text-5xl font-bold text-white mb-2 md:mb-3 drop-shadow-md font-sans group-hover:text-blue-300 transition-colors text-center md:text-right">
             {currentApp.title}
           </h1>
           
           {/* Summary / Short Description */}
-          <p dir="rtl" className="text-gray-200 text-sm md:text-lg mb-4 max-w-xl font-sans leading-relaxed drop-shadow-sm whitespace-nowrap overflow-hidden text-ellipsis w-full">
+          <p dir="rtl" className="text-gray-200 text-sm md:text-lg mb-4 max-w-xl font-sans leading-relaxed drop-shadow-sm whitespace-nowrap overflow-hidden text-ellipsis w-full text-center md:text-right">
             {description}
           </p>
           
@@ -161,16 +181,32 @@ const Hero: React.FC<HeroProps> = ({ featuredApps }) => {
             )}
           </div>
 
-          <a 
-              href={currentApp.playStoreUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-full transition-all duration-300 flex items-center shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-1 w-full md:w-auto justify-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              حمله من جوجل بلاي
-              <Download size={18} className="ml-2" />
-          </a>
+          <div className="flex gap-2 w-full md:w-auto justify-center">
+            <a 
+                href={currentApp.playStoreUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded-full transition-all duration-300 flex items-center shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-1 w-full md:w-auto justify-center"
+                onClick={(e) => e.stopPropagation()}
+                >
+                حمله من جوجل بلاي
+                <ExternalLink size={18} className="ml-2" />
+            </a>
+            
+            {/* Direct Download for Hero */}
+            {currentApp.directDownloadUrl && (
+                <a 
+                    href={currentApp.directDownloadUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-full transition-all duration-300 flex items-center shadow-lg backdrop-blur-sm border border-white/20"
+                    onClick={(e) => e.stopPropagation()}
+                    title="تحميل خاص بالاجهزة القديمة"
+                >
+                    <Download size={18} />
+                </a>
+            )}
+          </div>
         </div>
 
       </div>

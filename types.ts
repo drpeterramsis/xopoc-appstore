@@ -5,6 +5,9 @@ export interface AppData {
   category: AppCategory;
   playStoreUrl: string;
   
+  // New: Direct Download Link (APK)
+  directDownloadUrl?: string;
+
   // Fields fetched asynchronously via API
   rating?: number;
   downloads?: string;

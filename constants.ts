@@ -12,6 +12,8 @@ export const APPS_DATA: AppData[] = [
     developer: 'Xopoc',
     category: AppCategory.HYMNS,
     playStoreUrl: 'https://play.google.com/store/apps/details?id=com.xopoc.drpeterramsis.xopocpatcher',
+    // Added Direct Download Link
+    directDownloadUrl: 'https://dl.dropbox.com/scl/fi/kyotj8tka9875swea0kjy/2025.apk?rlkey=zipeaygiu3jxmqwro4nfyc04c&st=9zmsks72',
     featured: true
   },
   {
@@ -20,6 +22,8 @@ export const APPS_DATA: AppData[] = [
     developer: 'Xopoc',
     category: AppCategory.HYMNS,
     playStoreUrl: 'https://play.google.com/store/apps/details?id=com.xopoc.drpeterramsis.copticalhan.arabictasbeha_p',
+    // Added Direct Download Link
+    directDownloadUrl: 'https://dl.dropbox.com/scl/fi/9hysxre0ziqs8xijh2aas/2025.apk?rlkey=1v6ztqmn6uc18ulen77oezxx4&st=2ll0mcp4',
     featured: true
   },
   {
@@ -43,6 +47,8 @@ export const APPS_DATA: AppData[] = [
     developer: 'Xopoc',
     category: AppCategory.HYMNS,
     playStoreUrl: 'https://play.google.com/store/apps/details?id=io.kodular.drpeterramsis2007.agpeya2',
+    // Added Direct Download Link
+    directDownloadUrl: 'https://dl.dropboxusercontent.com/scl/fi/utv7on33pmmfofi0k4hgm/2025.apk?rlkey=sc1p5wa0qm5536bc691phifp8&st=qmfi4yco',
     featured: true
   },
   {
@@ -65,6 +71,8 @@ export const APPS_DATA: AppData[] = [
     developer: 'Xopoc',
     category: AppCategory.BIBLE,
     playStoreUrl: 'https://play.google.com/store/apps/details?id=com.xopoc.drpeterramsis.copticalhan_tasbehacopticgad',
+    // Added Direct Download Link
+    directDownloadUrl: 'https://dl.dropboxusercontent.com/scl/fi/kn2rta4mn2muklmoci1mi/2025.apk?rlkey=7kii28xkg8lhnl5m9zm7d7nw0&st=0j7bph6p',
     featured: true
   },
   {
@@ -74,6 +82,8 @@ export const APPS_DATA: AppData[] = [
     // UPDATED: Changed from HYMNS to SERVICES as requested
     category: AppCategory.SERVICES, 
     playStoreUrl: 'https://play.google.com/store/apps/details?id=io.kodular.drpeterramsis2007.Colored_Kholagy',
+    // Added Direct Download Link
+    directDownloadUrl: 'https://dl.dropboxusercontent.com/scl/fi/z4ymkcjrnwmmi9nxd08l5/2025.apk?rlkey=zfobfl517ddwcxvregejd9cxv&st=gq7gjaf7',
     featured: true
   },
   {
@@ -96,6 +106,8 @@ export const APPS_DATA: AppData[] = [
     developer: 'Xopoc',
     category: AppCategory.BIBLE,
     playStoreUrl: 'https://play.google.com/store/apps/details?id=io.kodular.drpeterramsis2007.NewmazamerAudio',
+    // Added Direct Download Link
+    directDownloadUrl: 'https://dl.dropboxusercontent.com/scl/fi/x4wwdbx45y0341ssg4c1t/2025.apk?rlkey=0xkyfun9thb3r3umb0j3jtze8&st=pnwuizgc',
     featured: true
   },
   {
@@ -103,21 +115,27 @@ export const APPS_DATA: AppData[] = [
     title: 'سوتيريا',
     developer: 'Xopoc',
     category: AppCategory.HYMNS,
-    playStoreUrl: 'https://play.google.com/store/apps/details?id=appinventor.ai_drpeterramsis2007.Passion_alhan'
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=appinventor.ai_drpeterramsis2007.Passion_alhan',
+    // Added Direct Download Link
+    directDownloadUrl: 'https://dl.dropboxusercontent.com/scl/fi/mivwn70ddvjiwlfid0c26/2025.apk?rlkey=q1hbiz624pk7pnzt7qwjx6heu&st=jsbqsmbz'
   },
   {
     id: 'io.kodular.drpeterramsis2007.Arshy_Angelos',
     title: 'مردات والحان الشماس',
     developer: 'Xopoc',
     category: AppCategory.HYMNS,
-    playStoreUrl: 'https://play.google.com/store/apps/details?id=io.kodular.drpeterramsis2007.Arshy_Angelos'
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=io.kodular.drpeterramsis2007.Arshy_Angelos',
+    // Added Direct Download Link
+    directDownloadUrl: 'https://dl.dropbox.com/scl/fi/w3xc9o3i1vznxg8swboq6/2025.apk?rlkey=mmf6t9f1nnzkr46vxfcigm10t&st=md60amtu'
   },
   {
     id: 'appinventor.ai_drpeterramsis2007.CONFESSION',
     title: 'ميطانيا ◄دليل التوبة والاعتراف',
     developer: 'Xopoc',
     category: AppCategory.SERVICES,
-    playStoreUrl: 'https://play.google.com/store/apps/details?id=appinventor.ai_drpeterramsis2007.CONFESSION'
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=appinventor.ai_drpeterramsis2007.CONFESSION',
+    // Added Direct Download Link
+    directDownloadUrl: 'https://dl.dropbox.com/scl/fi/2nkpqa1h87zejk7d34txp/2025.apk?rlkey=gocn971uamjeghvtfcm04t1et&st=n8hk7m0m'
   },
   {
     id: 'com.xopoc.peterramsis.psalmody',

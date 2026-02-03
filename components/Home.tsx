@@ -108,7 +108,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-text font-sans selection:bg-primary/30 pb-20">
+    <div className="min-h-screen bg-background text-text font-sans selection:bg-primary/30 pb-20" dir="rtl">
       
       <Navbar 
         onSearch={handleSearch} 
@@ -181,7 +181,7 @@ const Home: React.FC = () => {
         <div className="flex flex-col justify-center items-center max-w-7xl mx-auto px-4 text-xs text-gray-500 gap-1">
            <span className="text-secondary font-bold">منصة تطوير البرامج المسيحية المتخصصة للموبايل</span>
            <div className="flex justify-between w-full font-bold mt-1">
-             <span>v2.2.5</span>
+             <span>v2.2.7</span>
              <span>© {new Date().getFullYear()} برامج خورس - Xopoc Store</span>
            </div>
         </div>

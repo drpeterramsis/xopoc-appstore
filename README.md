@@ -5,6 +5,18 @@ The official app store for Xopoc Coptic applications.
 
 ## Version History
 
+### v2.2.7
+- **Compatibility Update**: Renamed "Direct Download" button to "**تحميل خاص بالاجهزة القديمة**" (Special download for old devices) to explicitly warn users that the APK is intended for Android 6/7.
+- **UI Enhancements**:
+    - **RTL Alignment**: Enforced Right-to-Left text alignment across the application components (Hero, Details) for better Arabic language support.
+    - **Hero Descriptions**: Improved logic to prevent the App Title from appearing redundantly at the start of the description in the featured slider.
+- **Code Quality**: Added regex escaping for safer string manipulation when cleaning descriptions.
+
+### v2.2.6
+- **Direct Download**: Added "Direct Download (APK)" feature for select apps, allowing users to download the application package directly from Dropbox servers without navigating to Google Play.
+- **Hero Update**: Integrated Direct Download buttons into the Hero slider for featured apps that support this feature.
+- **Apps Updated**: Enabled direct downloads for apps: Absaltos, Eshlil, Agpeya Audio, Psalms, Bible Audio, Deacon Hymns, Soteria, Metanoia, and Xopoc Khoros.
+
 ### v2.2.5
 - **UI Fix (Contrast)**: Added smart text color adjustment for the "Download" button in App Details.
     - Uses YIQ color space formula to detect if the app's dominant theme color is light or dark.

@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowRight, Star, Download, ShieldCheck, Loader2, AlertCircle, Calendar, Tag, MessageSquare } from 'lucide-react';
+import { ArrowRight, Star, Download, ShieldCheck, Loader2, AlertCircle, Calendar, Tag, MessageSquare, ExternalLink } from 'lucide-react';
 import { APPS_DATA } from '../constants';
 import { AppData } from '../types';
 
@@ -108,9 +108,18 @@ const AppDetails: React.FC = () => {
       backgroundColor: dominantColor || '#C62828',
       color: isLightColor ? '#000000' : '#ffffff'
   };
+  
+  // Secondary Button Style (for direct download)
+  // Inverse of main button for contrast
+  const secondaryButtonStyle = {
+      backgroundColor: 'transparent',
+      borderColor: dominantColor || '#C62828',
+      color: dominantColor || '#C62828',
+      borderWidth: '2px'
+  };
 
   return (
-    <div className="min-h-screen bg-background pt-20 pb-20 animate-fade-in text-text font-sans relative">
+    <div className="min-h-screen bg-background pt-20 pb-20 animate-fade-in text-text font-sans relative" dir="rtl">
       <canvas ref={canvasRef} className="hidden"></canvas>
       
       {/* Header / Nav */}
@@ -213,15 +222,36 @@ const AppDetails: React.FC = () => {
                         </div>
                     </div>
 
-                    <a 
-                    href={basicAppInfo.playStoreUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full md:w-auto inline-flex items-center justify-center font-bold py-3 px-10 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105"
-                    style={buttonStyle}
-                    >
-                    تحميل من جوجل بلاي
-                    </a>
+                    {/* Action Buttons */}
+                    <div className="flex flex-col md:flex-row gap-3 w-full justify-center md:justify-end">
+                      {/* Google Play Button */}
+                      <a 
+                        href={basicAppInfo.playStoreUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 md:flex-none inline-flex items-center justify-center font-bold py-3 px-6 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 hover:scale-105"
+                        style={buttonStyle}
+                      >
+                        تحميل من جوجل بلاي
+                        <ExternalLink size={18} className="ml-2" />
+                      </a>
+                      
+                      {/* Direct Download Button (If Available) */}
+                      {basicAppInfo.directDownloadUrl && (
+                        <a 
+                            href={basicAppInfo.directDownloadUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex-1 md:flex-none inline-flex items-center justify-center font-bold py-3 px-6 rounded-full transition-all duration-300 hover:bg-gray-50 border-2"
+                            style={secondaryButtonStyle}
+                            title="مناسب فقط لأندرويد 6 و 7"
+                        >
+                            تحميل خاص بالاجهزة القديمة
+                            <Download size={18} className="ml-2" />
+                        </a>
+                      )}
+                    </div>
+
                 </div>
                 </div>
 
